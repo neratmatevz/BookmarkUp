@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": { "url": "https://www.google.com/generate_204" }
+    },
+    "condition": {
+      "regexFilter": "^https?://newtab@",
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]

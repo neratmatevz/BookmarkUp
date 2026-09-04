@@ -26,3 +26,62 @@ export function isSafeUrl(raw) {
     return false;
   }
 }
+
+/**
+ * Marker used to tag bookmarks that BookmarkUp manages. It is placed in the
+ * URL's userinfo (username) slot — `https://example.com` becomes
+ * `https://newtab@example.com` — which keeps the bookmark pointing at the same
+ * site (so it still works if the extension is removed) while giving the
+ * background redirect rule something to match on.
+ */
+export const MARKER_USERNAME = "newtab";
+
+function isHttpProtocol(protocol) {
+  return protocol === "http:" || protocol === "https:";
+}
+
+/** Only http/https bookmarks without existing credentials can carry the marker. */
+export function shouldMark(raw) {
+  try {
+    const u = new URL(raw);
+    return isHttpProtocol(u.protocol) && u.username === "";
+  } catch {
+    return false;
+  }
+}
+
+/** @param {string} raw */
+export function hasMarker(raw) {
+  try {
+    const u = new URL(raw);
+    return u.username === MARKER_USERNAME && u.password === "";
+  } catch {
+    return false;
+  }
+}
+
+/** Add the marker; returns the input unchanged if it can't/shouldn't be marked. */
+export function addMarker(raw) {
+  try {
+    const u = new URL(raw);
+    if (!isHttpProtocol(u.protocol) || u.username !== "") return raw;
+    u.username = MARKER_USERNAME;
+    return u.href;
+  } catch {
+    return raw;
+  }
+}
+
+/** Remove the marker; returns the input unchanged if it isn't marked. */
+export function stripMarker(raw) {
+  try {
+    const u = new URL(raw);
+    if (u.username === MARKER_USERNAME && u.password === "") {
+      u.username = "";
+      return u.href;
+    }
+    return raw;
+  } catch {
+    return raw;
+  }
+}

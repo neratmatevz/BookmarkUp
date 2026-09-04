@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "BookmarkUp",
-  "version": "0.1.0",
-  "description": "Open any bookmark in a new tab with a single left click — built for laptop touchpads.",
+  "version": "1.0.0",
+  "description": "Open any bookmark in a new tab with a single left click.",
   "minimum_chrome_version": "116",
   "action": {
-    "default_title": "BookmarkUp — open a bookmark in a new tab",
+    "default_title": "BookmarkUp - open a bookmark in a new tab",
     "default_popup": "src/popup/popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
@@ -24,7 +24,23 @@
     "service_worker": "src/background/service-worker.js",
     "type": "module"
   },
-  "permissions": ["bookmarks", "storage", "favicon", "webNavigation"],
+  "permissions": [
+    "bookmarks",
+    "storage",
+    "favicon",
+    "webNavigation",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "newtab_204",
+        "enabled": true,
+        "path": "src/rules/newtab-204.json"
+      }
+    ]
+  },
   "commands": {
     "_execute_action": {
       "suggested_key": {

@@ -8,7 +8,7 @@
  * markup into the popup.
  */
 
-import { isSafeUrl } from "../shared/url.js";
+import { isSafeUrl, stripMarker } from "../shared/url.js";
 
 const STORAGE_KEY = "openInBackground";
 const MAX_SEARCH_RESULTS = 300;
@@ -137,27 +137,30 @@ function buildBookmark(node) {
 
 /** @param {{ title: string, url: string }} node */
 function makeBookmarkRow(node) {
+  // Bookmarks may carry BookmarkUp's `newtab@` marker; show and open them clean.
+  const url = stripMarker(node.url);
+
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "row bookmark";
-  btn.title = node.url;
+  btn.title = url;
 
   const icon = document.createElement("img");
   icon.className = "icon";
   icon.width = 16;
   icon.height = 16;
   icon.alt = "";
-  icon.src = faviconUrl(node.url);
+  icon.src = faviconUrl(url);
   icon.addEventListener("error", () => {
     icon.style.visibility = "hidden";
   });
 
   const label = document.createElement("span");
   label.className = "label";
-  label.textContent = node.title || node.url;
+  label.textContent = node.title || url;
 
   btn.append(icon, label);
-  btn.addEventListener("click", () => openBookmark(node.url));
+  btn.addEventListener("click", () => openBookmark(url));
   return btn;
 }
 
@@ -176,7 +179,11 @@ function buildSearchIndex(roots) {
   searchIndex = [];
   const walk = (node) => {
     if (node.url !== undefined) {
-      searchIndex.push({ id: node.id, title: node.title || "", url: node.url });
+      searchIndex.push({
+        id: node.id,
+        title: node.title || "",
+        url: stripMarker(node.url),
+      });
     }
     for (const child of node.children ?? []) walk(child);
   };

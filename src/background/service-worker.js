@@ -1,47 +1,39 @@
 /**
- * BookmarkUp background service worker — experimental "native bar" mode.
+ * BookmarkUp background service worker — "native bar" mode via the marker + 204
+ * technique.
  *
- * The browser's built-in bookmarks bar/menu/manager is native UI that an
- * extension cannot hook into directly. But when a bookmark is clicked, the
- * browser navigates the CURRENT tab to it and reports the navigation with
- * `transitionType === "auto_bookmark"`.
+ * The browser's built-in bookmarks bar can't be hooked directly, and an
+ * extension can't cancel the navigation a bookmark click starts. So instead of
+ * reacting after the fact, BookmarkUp makes the bookmark itself un-navigable:
  *
- * Extensions cannot cancel that navigation, so we do the next best thing:
- *   1. detect the auto_bookmark navigation in the top frame,
- *   2. open the same URL in a NEW tab,
- *   3. send the original tab back to where it was (via session history, which
- *      usually restores instantly from the back/forward cache).
+ *   1. Every managed http/https bookmark URL is rewritten to carry a marker in
+ *      its userinfo — `https://example.com` -> `https://newtab@example.com`
+ *      (see markAllBookmarks / the chrome.bookmarks listeners below).
+ *   2. A declarativeNetRequest rule (src/rules/newtab-204.json) redirects any
+ *      main-frame request to a `newtab@` URL to an endpoint that returns HTTP
+ *      204 No Content. Per the HTTP spec a 204 tells the browser to stay on the
+ *      current document, so the current tab never navigates — no flash, no
+ *      reload.
+ *   3. This worker sees the navigation attempt (webNavigation.onBeforeNavigate),
+ *      strips the marker, and opens the real URL in a new tab.
  *
- * Known trade-offs (see README): a brief flash as the source tab commits the
- * target before bouncing back; it applies to bookmarks opened from the bar,
- * the menu, and the bookmark manager alike; middle/ctrl-click (already opens a
- * new tab) is detected and left untouched.
- *
- * Only top-frame `auto_bookmark` navigations are ever touched — ordinary link
- * clicks, typed URLs, reloads, and history navigation are ignored.
+ * Because only BookmarkUp's own bookmarks carry the marker, ordinary browsing
+ * is never touched.
  */
 
-import { isSafeUrl } from "../shared/url.js";
+import { addMarker, hasMarker, shouldMark, stripMarker } from "../shared/url.js";
 
 const STORAGE_KEY = "openInBackground";
+const NEW_TAB_GRACE_MS = 2500;
 
 /**
  * Recently created tabs (tabId -> createdAt ms). A bookmark opened via
- * middle-click / ctrl-click / "open in new tab" lands in a brand-new tab, so
- * its first commit must NOT be bounced (that would open a second tab). Unlike
- * onCreatedNavigationTarget, chrome.tabs.onCreated fires for tabs opened from
- * the native bookmarks bar too, so it is the reliable signal.
+ * middle/ctrl-click lands in a brand-new tab; that tab should become the
+ * bookmark itself rather than spawning a second tab.
  */
 const recentTabs = new Map();
-const NEW_TAB_GRACE_MS = 2500;
 
-// Last committed top-frame URL per tab, tracked from webNavigation (which
-// reports URLs without the "tabs" permission). Used to restore the source tab
-// if goBack() has no history entry to return to.
-const tabLastUrl = new Map();
-const RESTORE_CHECK_MS = 400;
-
-// Cached preference so onCommitted can react synchronously (less flash).
+// Cached preference so onBeforeNavigate can react synchronously.
 let openInBackground = false;
 
 chrome.storage.local
@@ -57,6 +49,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
+/* ------------------------------------------------------------------ *
+ * New-tab detection
+ * ------------------------------------------------------------------ */
+
 chrome.tabs.onCreated.addListener((tab) => {
   if (tab.id !== undefined && tab.id !== chrome.tabs.TAB_ID_NONE) {
     recentTabs.set(tab.id, Date.now());
@@ -65,34 +61,9 @@ chrome.tabs.onCreated.addListener((tab) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   recentTabs.delete(tabId);
-  tabLastUrl.delete(tabId);
-});
-
-chrome.webNavigation.onCommitted.addListener((details) => {
-  if (details.frameId !== 0) return;
-
-  const { tabId, url, transitionType, transitionQualifiers } = details;
-  const isBackForward = (transitionQualifiers || []).includes("forward_back");
-
-  // The URL the tab was on before this commit — the page to restore to.
-  const prevUrl = tabLastUrl.get(tabId);
-  tabLastUrl.set(tabId, url);
-
-  // A forward/back navigation (including our own goBack) is never a fresh
-  // bookmark click, even if the history entry originated from a bookmark.
-  if (
-    transitionType === "auto_bookmark" &&
-    !isBackForward &&
-    isSafeUrl(url) &&
-    !isNewTab(tabId)
-  ) {
-    handleNativeBookmark(tabId, url, prevUrl);
-  }
 });
 
 function isNewTab(tabId) {
-  // A bookmark opened straight into a brand-new tab (middle/ctrl-click, "open
-  // in new tab") — the browser already made the tab, so it must not be bounced.
   const createdAt = recentTabs.get(tabId);
   if (createdAt !== undefined && Date.now() - createdAt < NEW_TAB_GRACE_MS) {
     recentTabs.delete(tabId);
@@ -101,39 +72,96 @@ function isNewTab(tabId) {
   return false;
 }
 
-function handleNativeBookmark(sourceTabId, url, prevUrl) {
-  // Open the bookmark where the user wanted it: a new tab.
-  chrome.tabs
-    .create({ url, active: !openInBackground })
-    .catch((err) => console.error("BookmarkUp:", err));
+/* ------------------------------------------------------------------ *
+ * Navigation interception
+ * ------------------------------------------------------------------ */
 
-  // Send the source tab back off the bookmark. goBack() restores the previous
-  // page instantly from the back/forward cache when possible.
-  chrome.tabs.goBack(sourceTabId).catch(() => {});
+chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  if (details.frameId !== 0) return;
+  if (!hasMarker(details.url)) return;
 
-  // Safety net: if the tab had no history to go back to, goBack() is a no-op
-  // and the tab is left sitting on the bookmark (which looks like a duplicate
-  // tab). Shortly after, if it is still on the bookmark's site, restore the
-  // page we recorded before the click.
-  if (prevUrl && !sameOrigin(prevUrl, url)) {
-    setTimeout(() => restoreIfStuck(sourceTabId, url, prevUrl), RESTORE_CHECK_MS);
+  const cleanUrl = stripMarker(details.url);
+
+  if (isNewTab(details.tabId)) {
+    // Middle/ctrl-click already opened a fresh tab for this bookmark (which the
+    // 204 rule would otherwise blank). Load the real page there instead.
+    chrome.tabs.update(details.tabId, { url: cleanUrl }).catch(logError);
+  } else {
+    // Left-click in an existing tab: the 204 redirect keeps that tab where it
+    // is, so open the real page in a new tab.
+    chrome.tabs
+      .create({ url: cleanUrl, active: !openInBackground })
+      .catch(logError);
   }
-}
+});
 
-function restoreIfStuck(tabId, bookmarkUrl, prevUrl) {
-  // If goBack() worked, a forward_back commit will have updated tabLastUrl to
-  // the previous page. If the tab is still on the bookmark's site, goBack() was
-  // a no-op (no history) and we navigate it back explicitly.
-  const current = tabLastUrl.get(tabId);
-  if (current && sameOrigin(current, bookmarkUrl)) {
-    chrome.tabs.update(tabId, { url: prevUrl }).catch(() => {});
-  }
-}
+/* ------------------------------------------------------------------ *
+ * Bookmark marker management
+ * ------------------------------------------------------------------ */
 
-function sameOrigin(a, b) {
+// Mark existing bookmarks on install/update and at browser startup. New and
+// edited bookmarks are handled live by the listeners below.
+chrome.runtime.onInstalled.addListener(markAllBookmarks);
+chrome.runtime.onStartup.addListener(markAllBookmarks);
+
+chrome.bookmarks.onCreated.addListener((_id, node) => maybeMark(_id, node.url));
+chrome.bookmarks.onChanged.addListener((id, changeInfo) =>
+  maybeMark(id, changeInfo.url),
+);
+
+async function markAllBookmarks() {
   try {
-    return new URL(a).origin === new URL(b).origin;
-  } catch {
-    return false;
+    const tree = await chrome.bookmarks.getTree();
+    const updates = [];
+    walkBookmarks(tree, (node) => {
+      if (node.url && shouldMark(node.url)) {
+        updates.push([node.id, addMarker(node.url)]);
+      }
+    });
+    for (const [id, url] of updates) {
+      await chrome.bookmarks.update(id, { url }).catch(() => {});
+    }
+  } catch (err) {
+    logError(err);
   }
+}
+
+// Marking a bookmark fires onChanged again, but the marked URL no longer
+// satisfies shouldMark(), so this does not loop.
+function maybeMark(id, url) {
+  if (url && shouldMark(url)) {
+    chrome.bookmarks.update(id, { url: addMarker(url) }).catch(() => {});
+  }
+}
+
+function walkBookmarks(nodes, fn) {
+  for (const node of nodes) {
+    fn(node);
+    if (node.children) walkBookmarks(node.children, fn);
+  }
+}
+
+/**
+ * Escape hatch: removes BookmarkUp's marker from every bookmark, restoring the
+ * original URLs. Run `bookmarkupUnmarkAll()` from the service-worker console to
+ * revert. Returns the number of bookmarks changed.
+ */
+async function unmarkAllBookmarks() {
+  const tree = await chrome.bookmarks.getTree();
+  const updates = [];
+  walkBookmarks(tree, (node) => {
+    if (node.url && hasMarker(node.url)) {
+      updates.push([node.id, stripMarker(node.url)]);
+    }
+  });
+  for (const [id, url] of updates) {
+    await chrome.bookmarks.update(id, { url }).catch(() => {});
+  }
+  console.info(`BookmarkUp: unmarked ${updates.length} bookmark(s)`);
+  return updates.length;
+}
+globalThis.bookmarkupUnmarkAll = unmarkAllBookmarks;
+
+function logError(err) {
+  console.error("BookmarkUp:", err);
 }

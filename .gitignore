@@ -6,6 +6,9 @@ node_modules/
 web-ext-artifacts/
 dist/
 
+# Browser-generated when loading unpacked (indexed DNR rulesets)
+_metadata/
+
 # Editor / OS cruft
 .vscode/
 .idea/
