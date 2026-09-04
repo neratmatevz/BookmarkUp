@@ -1,127 +1,76 @@
+<div align="center">
+
+<img src="icons/icon-128.png" width="96" height="96" alt="BookmarkUp" />
+
 # BookmarkUp
 
-A tiny Chrome extension that opens any bookmark **in a new tab with a single
-left click** — no middle-click, no `Ctrl`+click. Built for laptops where those
-gestures are awkward on a touchpad.
+**Open any bookmark in a new tab with a single left click.**
 
-It works two ways: an experimental **native bar mode** that intercepts clicks
-on the browser's own bookmarks bar, and a **popup** you open from the toolbar.
+Built for laptops and touchpads, where middle-click and Ctrl+click are awkward.
 
-## Native bar mode (experimental)
+</div>
 
-Extensions **cannot** change what the browser's built-in bookmarks bar does on
-click — that bar is native UI with no click hook, and no extension API can
-cancel the navigation it triggers. BookmarkUp works around this:
+---
 
-1. When you click a native bookmark, the browser reports the navigation with
-   `transitionType === "auto_bookmark"`.
-2. BookmarkUp opens that URL in a **new tab**…
-3. …and sends the original tab **back** to the page it was on, via session
-   history (usually an instant back/forward-cache restore).
+## Why BookmarkUp?
 
-The net effect: single left-click on a native bookmark opens it in a new tab.
+In every browser, left-clicking a bookmark opens it **in your current tab** - replacing
+whatever you were doing. Lost your scroll position. Lost the search you were half-way
+through typing. To get a new tab instead, you have to middle-click or Ctrl+click, which
+is fiddly on a trackpad.
 
-**Trade-offs — read these:**
+BookmarkUp flips the default: **a plain left click opens the bookmark in a new tab, and
+your current tab stays exactly as it was** - same page, same scroll position, even text
+you'd typed but not yet submitted. Nothing is lost.
 
-- There is a **brief flash**: the source tab starts loading the bookmark before
-  bouncing back. With a foreground new tab (default) your focus has already
-  moved, so it's mostly hidden; in *Background* mode it's visible.
-- It applies to bookmarks opened from the **bar, the menu, and the bookmark
-  manager** alike — the browser doesn't distinguish them.
-- **Middle-click / Ctrl-click** (which already open a new tab) are detected and
-  left untouched, so you won't get duplicates.
-- Only top-frame `auto_bookmark` navigations are touched; ordinary browsing is
-  untouched.
+## What it does
 
-This mode needs the `webNavigation` permission (no host permissions).
+- **Left-click a bookmark → new tab.** Works with the bookmarks you already have, right
+  from your browser's bookmarks bar. No new habits to learn.
+- **Your current tab is never disturbed.** BookmarkUp keeps the page you're on frozen in
+  place - no reload, no flicker - so unsaved input and scroll position survive.
+- **Middle-click still works** exactly as before.
+- **A handy popup**, too. Click the BookmarkUp toolbar button (or press **Ctrl+Shift+U**)
+  for a searchable list of all your bookmarks - click any to open it in a new tab.
+- **Background mode.** Flip one switch and bookmarks open quietly in background tabs so
+  you can line up several at once.
+- **Search & keyboard-friendly.** Type to filter, arrow keys to move, Enter to open.
+- **Light & dark**, following your system theme.
 
-## Popup
+## How to use it
 
-Click the toolbar icon (or press `Ctrl+Shift+U` / `⌘+Shift+U`) to open a popup
-listing your bookmarks. Left-click one and it opens in a fresh tab.
+1. Click a bookmark on your bookmarks bar with a normal **left click**.
+2. It opens in a **new tab** - and the tab you were on doesn't budge.
 
-## Features
+That's it. For a full, searchable list of your bookmarks, click the **BookmarkUp** icon in
+the toolbar or press **Ctrl+Shift+U**, and toggle **Background** there if you'd like tabs
+to open without pulling you away.
 
-- **One left click → new tab.** That's the whole point.
-- **Background mode.** Flip the *Background* toggle to open bookmarks in a
-  background tab and keep the popup open, so you can fire off several at once.
-  The choice is remembered.
-- **Live search** across bookmark titles and URLs.
-- **Collapsible folders** mirroring your real bookmark structure.
-- **Keyboard friendly.** Type to search, `Enter` opens the first match,
-  `↑`/`↓` move through the list, `Esc` clears the search.
-- **Light & dark** themes follow your system.
+## Availability
 
-## Install (development / unpacked)
+BookmarkUp is at **v1.0** and a public release on the **Chrome Web Store** is on the way.
+It works in Chrome, Brave, and other Chromium-based browsers (version 116 or newer).
 
-1. Open `chrome://extensions`.
-2. Enable **Developer mode** (top-right).
-3. Click **Load unpacked** and select this repository's root folder (the one
-   containing `manifest.json`).
-4. Pin **BookmarkUp** from the extensions menu for one-click access.
+> A store link will be added here once the release is live.
 
-The extension loads straight from source — there is no build step.
+## Privacy
 
-### Test native bar mode
+BookmarkUp is built to respect you:
 
-1. Make sure your bookmarks bar is visible (`Ctrl+Shift+B`) with a bookmark or
-   two on it.
-2. On any normal page, **left-click** a bookmark in the bar → it should open in
-   a **new tab** while your original tab stays where it was.
-3. **Middle-click** a bookmark → still opens one new tab (no duplicate).
-4. If something misbehaves, open `chrome://extensions` → BookmarkUp →
-   **service worker** → *Inspect* to see its console.
+- **No accounts, no tracking, no analytics.** It doesn't collect, store, or sell any
+  personal data.
+- **Your bookmarks stay yours.** They're read to show and open them - never uploaded
+  anywhere.
 
-## Permissions & privacy
+To open a bookmark without disturbing your current page, a click makes a single **empty,
+no-content network request** (it carries none of your data and returns nothing).
 
-BookmarkUp requests the minimum it needs and **sends nothing anywhere** — there
-are no network requests, no analytics, and no external servers. Everything runs
-locally in the popup.
+## Good to know
 
-| Permission | Why |
-| ---------- | --- |
-| `bookmarks` | Read your bookmarks to list them. Never modified. |
-| `storage`   | Remember the *Background* toggle (local only). |
-| `favicon`   | Show each site's icon via Chrome's built-in favicon cache. |
-| `webNavigation` | Detect native bookmark clicks (`auto_bookmark`) for native bar mode. |
-
-No `host_permissions` and no `tabs` permission are requested: neither
-`webNavigation` nor `chrome.tabs.create`/`goBack` requires access to your
-browsing data.
-
-## Security notes
-
-- Bookmark titles and URLs are treated as untrusted input. The popup builds its
-  DOM exclusively with `createElement` / `textContent` — never `innerHTML` — so
-  a bookmark cannot inject markup or script into the UI.
-- Before opening, each URL's scheme is checked against an allowlist
-  (`http`, `https`, `ftp`, `file`, `chrome`, …). `javascript:`, `data:`, and
-  other risky schemes are refused.
-- Manifest V3's strict content security policy is used as-is; there is no inline
-  script and no remote code.
-
-## Project layout
-
-```
-manifest.json          # MV3 manifest (extension root)
-src/popup/             # popup UI: html, css, js (ES module)
-src/background/        # service worker: native bar interception
-icons/                 # generated PNG icons (16/32/48/128)
-tools/generate_icons.py# regenerates the icons from code
-```
-
-## Development
-
-There is no build step — edit the source and reload the extension at
-`chrome://extensions`.
-
-To change the icons, edit `tools/generate_icons.py` and regenerate them:
-
-```bash
-pip install pillow
-python tools/generate_icons.py
-```
+To recognise which clicks are yours to handle, BookmarkUp adds a small, invisible tag to
+your bookmark links. This keeps each bookmark pointing at the same website, so everything
+keeps working normally - and it's fully reversible if you ever stop using the extension.
 
 ## License
 
-[MIT](LICENSE)
+BookmarkUp is released under the [MIT License](LICENSE) - free to use, modify, and share.
