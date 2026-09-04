@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BookmarkUp</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="brand">
+        <img src="../../icons/icon-32.png" width="20" height="20" alt="" />
+        <h1>BookmarkUp</h1>
+      </div>
+      <label class="toggle" title="Open bookmarks in a background tab and keep this panel open">
+        <input type="checkbox" id="background-toggle" />
+        <span>Background</span>
+      </label>
+    </header>
+
+    <div class="search">
+      <input
+        type="search"
+        id="search-input"
+        placeholder="Search bookmarks…"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Search bookmarks"
+      />
+    </div>
+
+    <main id="tree" class="tree" tabindex="-1" aria-label="Bookmarks"></main>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

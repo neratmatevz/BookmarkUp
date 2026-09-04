@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Packaged builds
+*.zip
+web-ext-artifacts/
+dist/
+
+# Editor / OS cruft
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python (icon tooling)
+__pycache__/
+*.pyc
+.venv/
