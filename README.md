@@ -46,12 +46,22 @@ That's it. For a full, searchable list of your bookmarks, click the **BookmarkUp
 the toolbar or press **Ctrl+Shift+U**, and toggle **Background** there if you'd like tabs
 to open without pulling you away.
 
-## Availability
+## Install
 
-BookmarkUp is at **v1.0** and a public release on the **Chrome Web Store** is on the way.
-It works in Chrome, Brave, and other Chromium-based browsers (version 116 or newer).
+BookmarkUp is at **v1.0.0**. A public release on the **Chrome Web Store** is on the way - in
+the meantime you can install it straight from GitHub:
 
-> A store link will be added here once the release is live.
+1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
+2. Open `chrome://extensions` (or `brave://extensions`) and turn on **Developer mode**
+   (top-right).
+3. Click **Load unpacked** and select the unzipped folder (the one containing
+   `manifest.json`).
+4. Pin BookmarkUp and start left-clicking your bookmarks.
+
+Works in Chrome, Brave, and other Chromium-based browsers (version 116 or newer).
+
+> Browsers show a "developer mode extensions" reminder on startup for anything installed
+> this way; it disappears once BookmarkUp is on the Chrome Web Store.
 
 ## Privacy
 
