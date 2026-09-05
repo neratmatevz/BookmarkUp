@@ -141,6 +141,39 @@ function walkBookmarks(nodes, fn) {
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Settings messages (from the popup)
+ * ------------------------------------------------------------------ */
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type !== "deleteAllData") return; // not ours
+
+  deleteAllData()
+    .then(() => sendResponse({ ok: true }))
+    .catch((err) => {
+      const cancelled = /cancell?ed/i.test(String(err?.message ?? err));
+      sendResponse({ ok: false, cancelled, error: String(err) });
+    });
+  return true; // keep the message channel open for the async response
+});
+
+/**
+ * Full reset: restore every bookmark to its original URL, clear stored
+ * settings, then uninstall the extension. If the user cancels the browser's
+ * uninstall confirmation, re-apply the markers so BookmarkUp keeps working and
+ * rethrow so the popup can report it.
+ */
+async function deleteAllData() {
+  await unmarkAllBookmarks();
+  await chrome.storage.local.clear().catch(() => {});
+  try {
+    await chrome.management.uninstallSelf({ showConfirmDialog: true });
+  } catch (err) {
+    await markAllBookmarks();
+    throw err;
+  }
+}
+
 /**
  * Escape hatch: removes BookmarkUp's marker from every bookmark, restoring the
  * original URLs. Run `bookmarkupUnmarkAll()` from the service-worker console to
