@@ -587,12 +587,13 @@ function makeEngineRow(engine) {
   const row = document.createElement("div");
   row.className = "engine-row";
 
+  // Bundled engine logos (icons/engines/<id>.png).
   const icon = document.createElement("img");
   icon.className = "pb-icon";
   icon.width = 16;
   icon.height = 16;
   icon.alt = "";
-  icon.src = faviconUrl(engine.home);
+  icon.src = `../../icons/engines/${engine.id}.png`;
   icon.addEventListener("error", () => {
     icon.style.visibility = "hidden";
   });
