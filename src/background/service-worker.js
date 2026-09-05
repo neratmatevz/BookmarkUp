@@ -24,6 +24,7 @@
 import { addMarker, hasMarker, shouldMark, stripMarker } from "../shared/url.js";
 
 const STORAGE_KEY = "openInBackground";
+const MARKING_KEY = "markingEnabled";
 const NEW_TAB_GRACE_MS = 2500;
 
 /**
@@ -36,16 +37,32 @@ const recentTabs = new Map();
 // Cached preference so onBeforeNavigate can react synchronously.
 let openInBackground = false;
 
-chrome.storage.local
-  .get(STORAGE_KEY)
+/**
+ * Whether BookmarkUp marks bookmarks at all (persisted, default true). The
+ * "Unmark bookmarks" setting flips this off: the markers are stripped and the
+ * listeners below stop re-applying them, so the bookmarks bar behaves natively
+ * until the user turns it back on.
+ */
+let markingEnabled = true;
+
+// Resolves once the persisted preferences are loaded. Marking waits on this so
+// a startup markAllBookmarks() can't re-mark before we know the user turned it
+// off (markingEnabled defaults to true in memory until this settles).
+const ready = chrome.storage.local
+  .get([STORAGE_KEY, MARKING_KEY])
   .then((stored) => {
     openInBackground = stored[STORAGE_KEY] === true;
+    markingEnabled = stored[MARKING_KEY] !== false; // default on
   })
   .catch(() => {});
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && STORAGE_KEY in changes) {
+  if (area !== "local") return;
+  if (STORAGE_KEY in changes) {
     openInBackground = changes[STORAGE_KEY].newValue === true;
+  }
+  if (MARKING_KEY in changes) {
+    markingEnabled = changes[MARKING_KEY].newValue !== false;
   }
 });
 
@@ -110,7 +127,8 @@ chrome.bookmarks.onChanged.addListener((id, changeInfo) =>
 );
 
 async function markAllBookmarks() {
-  if (markingSuspended) return;
+  await ready;
+  if (!markingEnabled || markingSuspended) return 0;
   try {
     const tree = await chrome.bookmarks.getTree();
     const updates = [];
@@ -122,15 +140,18 @@ async function markAllBookmarks() {
     for (const [id, url] of updates) {
       await chrome.bookmarks.update(id, { url }).catch(() => {});
     }
+    return updates.length;
   } catch (err) {
     logError(err);
+    return 0;
   }
 }
 
 // Marking a bookmark fires onChanged again, but the marked URL no longer
 // satisfies shouldMark(), so this does not loop.
-function maybeMark(id, url) {
-  if (markingSuspended) return;
+async function maybeMark(id, url) {
+  await ready;
+  if (!markingEnabled || markingSuspended) return;
   if (url && shouldMark(url)) {
     chrome.bookmarks.update(id, { url: addMarker(url) }).catch(() => {});
   }
@@ -167,8 +188,26 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     markAllBookmarks().finally(() => sendResponse({ ok: true }));
     return true;
   }
+  if (message?.type === "setMarking") {
+    setMarking(message.enabled === true)
+      .then((count) => sendResponse({ ok: true, count }))
+      .catch((err) => sendResponse({ ok: false, error: String(err) }));
+    return true;
+  }
   return undefined; // not ours
 });
+
+/**
+ * Turn the whole new-tab behavior on or off. Persists the choice, then either
+ * marks every eligible bookmark or strips the markers back off. The flag is set
+ * before the bookmark updates so the onChanged listener doesn't fight them.
+ * Returns how many bookmarks changed.
+ */
+async function setMarking(enabled) {
+  markingEnabled = enabled;
+  await chrome.storage.local.set({ [MARKING_KEY]: enabled }).catch(() => {});
+  return enabled ? markAllBookmarks() : unmarkAllBookmarks();
+}
 
 /**
  * Restore every bookmark to its original URL and clear stored settings, in
