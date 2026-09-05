@@ -456,6 +456,30 @@ ul.node-list ul.node-list {
   color: var(--fg-muted);
 }
 
+/* Flush variant: heading sits at the edge (aligned with the settings above)
+ * and the arrow drops onto the hint line instead of indenting the heading. */
+.disclosure--flush {
+  align-items: center;
+}
+
+.disclosure-hintrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.disclosure-hintrow .twisty {
+  flex: 0 0 auto;
+  width: 12px;
+  margin-top: 0;
+  color: var(--fg-muted);
+  transition: transform 0.12s ease;
+}
+
+.disclosure-hintrow .hint {
+  margin-top: 0;
+}
+
 .perbookmark-panel {
   /* Left padding aligns the grid with the "Per bookmark" label (past the
    * 12px twisty + 6px gap in the disclosure header). */
@@ -497,18 +521,21 @@ ul.node-list ul.node-list {
   flex: 0 0 auto;
 }
 
-/* Slightly smaller switches for the solo bookmark rows. */
-.pb-item .switch-track {
+/* Slightly smaller switches for the 2-per-row grids (bookmarks, engines). */
+.pb-item .switch-track,
+.engine-row .switch-track {
   width: 30px;
   height: 16px;
 }
 
-.pb-item .switch-track::after {
+.pb-item .switch-track::after,
+.engine-row .switch-track::after {
   width: 12px;
   height: 12px;
 }
 
-.pb-item .switch input:checked + .switch-track::after {
+.pb-item .switch input:checked + .switch-track::after,
+.engine-row .switch input:checked + .switch-track::after {
   transform: translateX(14px);
 }
 
@@ -517,6 +544,37 @@ ul.node-list ul.node-list {
   padding: 4px 0;
   font-size: 11px;
   color: var(--fg-muted);
+}
+
+/* Search-engine behavior: two engines per row, flush with the heading. */
+.searchengine-panel {
+  padding: 2px 0 8px;
+}
+
+.engine-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+}
+
+.engine-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.engine-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.engine-row .switch {
+  flex: 0 0 auto;
 }
 
 .select {
