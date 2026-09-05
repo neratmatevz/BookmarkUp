@@ -90,6 +90,17 @@
             <span class="group-title">Behavior</span>
           </button>
           <div class="group-content" id="group-behavior" hidden>
+            <div class="setting">
+              <label for="background-toggle">
+                Open in background
+                <span class="hint">Bookmarks open without closing the extension popup</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" id="background-toggle" />
+                <span class="switch-track" aria-hidden="true"></span>
+              </label>
+            </div>
+
             <div class="setting no-divider">
               <label>
                 Bookmark bar functionality <span id="marking-state"></span>
@@ -113,17 +124,6 @@
                 </span>
               </button>
               <div id="perbookmark-panel" class="perbookmark-panel" hidden></div>
-            </div>
-
-            <div class="setting">
-              <label for="background-toggle">
-                Open in background
-                <span class="hint">Bookmarks open without closing the extension popup</span>
-              </label>
-              <label class="switch">
-                <input type="checkbox" id="background-toggle" />
-                <span class="switch-track" aria-hidden="true"></span>
-              </label>
             </div>
           </div>
         </section>

@@ -138,6 +138,11 @@ body {
   display: none;
 }
 
+/* The settings gear reads better a little larger than other icon buttons. */
+#settings-open {
+  font-size: 20px;
+}
+
 /* Views share the popup's flex column; only one is shown at a time. */
 .view {
   display: flex;
@@ -313,6 +318,10 @@ ul.node-list ul.node-list {
   width: 100%;
   padding: 10px 2px;
   border: 0;
+  /* Underline the heading with a soft shadow so the settings below read as
+   * belonging to this section. */
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 3px 5px -3px var(--shadow);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -345,7 +354,7 @@ ul.node-list ul.node-list {
 }
 
 .group-content {
-  padding: 0 2px 8px;
+  padding: 4px 2px 8px;
 }
 
 .group-content[hidden] {
@@ -391,6 +400,11 @@ ul.node-list ul.node-list {
   padding-left: 10px;
   border-left: 2px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+/* When it's the last item, the section's own divider closes the block. */
+.disclosure-wrap.nested:last-child {
+  border-bottom: 0;
 }
 
 .disclosure {
