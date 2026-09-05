@@ -8,10 +8,11 @@
  * markup into the popup.
  */
 
-import { isSafeUrl, stripMarker } from "../shared/url.js";
+import { isSafeUrl, shouldMark, stripMarker } from "../shared/url.js";
 
 const STORAGE_KEY = "openInBackground";
 const MARKING_KEY = "markingEnabled";
+const OPTOUT_KEY = "optedOut";
 const THEME_KEY = "theme";
 const THEMES = new Set(["system", "light", "dark"]);
 const MAX_SEARCH_RESULTS = 300;
@@ -22,6 +23,9 @@ let searchIndex = [];
 let cachedRoots = [];
 let openInBackground = false;
 let markingEnabled = true;
+/** Bookmark ids opted out of the new-tab behavior (mirrors the SW's set). */
+let optedOut = new Set();
+let perBookmarkRendered = false;
 let folderSeq = 0;
 
 const els = {
@@ -38,6 +42,8 @@ const els = {
   markingToggle: document.getElementById("marking-toggle"),
   markingState: document.getElementById("marking-state"),
   markingHint: document.getElementById("marking-hint"),
+  perBookmarkToggle: document.getElementById("perbookmark-toggle"),
+  perBookmarkPanel: document.getElementById("perbookmark-panel"),
   deleteData: document.getElementById("delete-data"),
   deleteCancel: document.getElementById("delete-cancel"),
   deleteConfirm: document.getElementById("delete-confirm"),
@@ -47,10 +53,11 @@ init();
 
 async function init() {
   // Read preferences up front so the UI opens in the right state.
-  const [theme, background, marking] = await Promise.all([
+  const [theme, background, marking, optOut] = await Promise.all([
     loadTheme(),
     loadBackgroundPreference(),
     loadMarkingEnabled(),
+    loadOptedOut(),
   ]);
 
   applyTheme(theme);
@@ -63,6 +70,9 @@ async function init() {
 
   updateMarkingUI(marking);
   els.markingToggle.addEventListener("click", onMarkingToggle);
+
+  optedOut = optOut;
+  els.perBookmarkToggle.addEventListener("click", onPerBookmarkToggle);
 
   els.settingsOpen.addEventListener("click", () => showSettings(true));
   els.settingsBack.addEventListener("click", () => showSettings(false));
@@ -397,6 +407,9 @@ function updateMarkingUI(enabled) {
   els.markingHint.textContent = enabled
     ? "Left-click a bookmark to open it in a new tab."
     : "Bookmarks open in the current tab, default behavior.";
+
+  // Keep the nested per-bookmark switches in sync with the master.
+  if (perBookmarkRendered) renderPerBookmark();
 }
 
 /**
@@ -414,6 +427,8 @@ async function onMarkingToggle() {
     if (!res || res.ok !== true) {
       throw new Error(res?.error || "Could not update bookmarks.");
     }
+    // Turning the master on re-includes every bookmark (SW cleared the set).
+    if (next) optedOut.clear();
     updateMarkingUI(next);
   } catch (err) {
     // Leave the UI on the previous state; nothing changed on failure.
@@ -421,6 +436,103 @@ async function onMarkingToggle() {
   } finally {
     els.markingToggle.disabled = false;
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * Per-bookmark opt-out
+ * ------------------------------------------------------------------ */
+
+async function loadOptedOut() {
+  try {
+    const stored = await chrome.storage.local.get(OPTOUT_KEY);
+    const list = stored[OPTOUT_KEY];
+    return new Set(Array.isArray(list) ? list : []);
+  } catch {
+    return new Set();
+  }
+}
+
+/** Show/hide the per-bookmark panel; build its grid lazily on first open. */
+function onPerBookmarkToggle() {
+  const open = els.perBookmarkToggle.getAttribute("aria-expanded") !== "true";
+  els.perBookmarkToggle.setAttribute("aria-expanded", String(open));
+  els.perBookmarkPanel.hidden = !open;
+  if (open && !perBookmarkRendered) {
+    renderPerBookmark();
+    perBookmarkRendered = true;
+  }
+}
+
+/** Build the 2-column grid of markable bookmarks, each with an on/off switch. */
+function renderPerBookmark() {
+  // Only http/https bookmarks can carry the marker; others can't be toggled.
+  const items = searchIndex.filter((entry) => shouldMark(entry.url));
+
+  els.perBookmarkPanel.replaceChildren();
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "pb-empty";
+    empty.textContent = "No web bookmarks to configure.";
+    els.perBookmarkPanel.append(empty);
+    return;
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "perbookmark-grid";
+  for (const entry of items) {
+    grid.append(makePerBookmarkItem(entry));
+  }
+  els.perBookmarkPanel.append(grid);
+}
+
+/** @param {{ id: string, title: string, url: string }} entry */
+function makePerBookmarkItem(entry) {
+  const item = document.createElement("div");
+  item.className = "pb-item";
+
+  const icon = document.createElement("img");
+  icon.className = "pb-icon";
+  icon.width = 16;
+  icon.height = 16;
+  icon.alt = "";
+  icon.src = faviconUrl(entry.url);
+  icon.addEventListener("error", () => {
+    icon.style.visibility = "hidden";
+  });
+
+  const title = document.createElement("span");
+  title.className = "pb-title";
+  title.textContent = entry.title || entry.url;
+  title.title = entry.title ? `${entry.title}\n${entry.url}` : entry.url;
+
+  const toggle = document.createElement("label");
+  toggle.className = "switch";
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  // On = gets the new-tab behavior. Disabled while the master switch is off,
+  // where per-bookmark choices don't apply.
+  input.checked = markingEnabled && !optedOut.has(entry.id);
+  input.disabled = !markingEnabled;
+  input.setAttribute("aria-label", `New-tab behavior for ${entry.title || entry.url}`);
+  input.addEventListener("change", () => onBookmarkToggle(entry.id, input));
+  const track = document.createElement("span");
+  track.className = "switch-track";
+  track.setAttribute("aria-hidden", "true");
+  toggle.append(input, track);
+
+  item.append(icon, title, toggle);
+  return item;
+}
+
+function onBookmarkToggle(id, input) {
+  const enabled = input.checked; // on = wants the new-tab behavior
+  if (enabled) optedOut.delete(id);
+  else optedOut.add(id);
+  chrome.runtime
+    .sendMessage({ type: "setBookmarkMarking", id, enabled })
+    .catch(() => {
+      /* best-effort; the local mirror already reflects the intent */
+    });
 }
 
 /* ------------------------------------------------------------------ *
