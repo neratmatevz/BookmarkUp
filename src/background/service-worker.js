@@ -8,7 +8,8 @@
  *
  *   1. Every managed http/https bookmark URL is rewritten to carry a marker in
  *      its userinfo — `https://example.com` -> `https://newtab@example.com`
- *      (see markAllBookmarks / the chrome.bookmarks listeners below).
+ *      (see syncAllBookmarks / the chrome.bookmarks listeners below). Bookmarks
+ *      the user opts out of, individually or globally, are left unmarked.
  *   2. A declarativeNetRequest rule (src/rules/newtab-204.json) redirects any
  *      main-frame request to a `newtab@` URL to an endpoint that returns HTTP
  *      204 No Content. Per the HTTP spec a 204 tells the browser to stay on the
@@ -25,6 +26,7 @@ import { addMarker, hasMarker, shouldMark, stripMarker } from "../shared/url.js"
 
 const STORAGE_KEY = "openInBackground";
 const MARKING_KEY = "markingEnabled";
+const OPTOUT_KEY = "optedOut";
 const NEW_TAB_GRACE_MS = 2500;
 
 /**
@@ -45,14 +47,24 @@ let openInBackground = false;
  */
 let markingEnabled = true;
 
+/**
+ * Bookmark ids the user has opted out of the new-tab behavior (persisted). An
+ * opted-out bookmark is left unmarked so it behaves natively. Absence = opted
+ * in (the default).
+ */
+let optedOut = new Set();
+
 // Resolves once the persisted preferences are loaded. Marking waits on this so
-// a startup markAllBookmarks() can't re-mark before we know the user turned it
-// off (markingEnabled defaults to true in memory until this settles).
+// a startup sync can't act before we know the user's choices (the defaults in
+// memory — marking on, nothing opted out — apply only until this settles).
 const ready = chrome.storage.local
-  .get([STORAGE_KEY, MARKING_KEY])
+  .get([STORAGE_KEY, MARKING_KEY, OPTOUT_KEY])
   .then((stored) => {
     openInBackground = stored[STORAGE_KEY] === true;
     markingEnabled = stored[MARKING_KEY] !== false; // default on
+    optedOut = new Set(
+      Array.isArray(stored[OPTOUT_KEY]) ? stored[OPTOUT_KEY] : [],
+    );
   })
   .catch(() => {});
 
@@ -63,6 +75,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
   if (MARKING_KEY in changes) {
     markingEnabled = changes[MARKING_KEY].newValue !== false;
+  }
+  if (OPTOUT_KEY in changes) {
+    const next = changes[OPTOUT_KEY].newValue;
+    optedOut = new Set(Array.isArray(next) ? next : []);
   }
 });
 
@@ -116,26 +132,48 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
  * Bookmark marker management
  * ------------------------------------------------------------------ */
 
-// Mark existing bookmarks on install/update and at browser startup. New and
+// Reconcile all bookmarks on install/update and at browser startup. New and
 // edited bookmarks are handled live by the listeners below.
-chrome.runtime.onInstalled.addListener(markAllBookmarks);
-chrome.runtime.onStartup.addListener(markAllBookmarks);
+chrome.runtime.onInstalled.addListener(syncAllBookmarks);
+chrome.runtime.onStartup.addListener(syncAllBookmarks);
 
-chrome.bookmarks.onCreated.addListener((_id, node) => maybeMark(_id, node.url));
+chrome.bookmarks.onCreated.addListener((id, node) => syncBookmark(id, node.url));
 chrome.bookmarks.onChanged.addListener((id, changeInfo) =>
-  maybeMark(id, changeInfo.url),
+  syncBookmark(id, changeInfo.url),
 );
 
-async function markAllBookmarks() {
+/** True for the http/https bookmarks BookmarkUp can manage (mark or has marked). */
+function isManageable(url) {
+  return hasMarker(url) || shouldMark(url);
+}
+
+/**
+ * The URL a bookmark should have given the current settings: marked when the
+ * behavior is on and the bookmark isn't opted out, otherwise unmarked. Returns
+ * the input unchanged for anything BookmarkUp doesn't manage.
+ */
+function targetUrl(id, url) {
+  if (!isManageable(url)) return url;
+  const wantMarked = markingEnabled && !optedOut.has(id);
+  if (wantMarked) return hasMarker(url) ? url : addMarker(url);
+  return hasMarker(url) ? stripMarker(url) : url;
+}
+
+/**
+ * Bring every bookmark into line with the current settings. Used on
+ * install/startup and whenever a global setting changes. Returns how many
+ * bookmarks were rewritten.
+ */
+async function syncAllBookmarks() {
   await ready;
-  if (!markingEnabled || markingSuspended) return 0;
+  if (markingSuspended) return 0;
   try {
     const tree = await chrome.bookmarks.getTree();
     const updates = [];
     walkBookmarks(tree, (node) => {
-      if (node.url && shouldMark(node.url)) {
-        updates.push([node.id, addMarker(node.url)]);
-      }
+      if (!node.url) return;
+      const next = targetUrl(node.id, node.url);
+      if (next !== node.url) updates.push([node.id, next]);
     });
     for (const [id, url] of updates) {
       await chrome.bookmarks.update(id, { url }).catch(() => {});
@@ -147,13 +185,15 @@ async function markAllBookmarks() {
   }
 }
 
-// Marking a bookmark fires onChanged again, but the marked URL no longer
-// satisfies shouldMark(), so this does not loop.
-async function maybeMark(id, url) {
+// Bring a single bookmark into line. Rewriting it fires onChanged again, but the
+// URL is now already at its target so targetUrl() returns it unchanged and this
+// does not loop.
+async function syncBookmark(id, url) {
   await ready;
-  if (!markingEnabled || markingSuspended) return;
-  if (url && shouldMark(url)) {
-    chrome.bookmarks.update(id, { url: addMarker(url) }).catch(() => {});
+  if (markingSuspended || !url) return;
+  const next = targetUrl(id, url);
+  if (next !== url) {
+    chrome.bookmarks.update(id, { url: next }).catch(() => {});
   }
 }
 
@@ -185,7 +225,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
   if (message?.type === "resumeMarking") {
     markingSuspended = false;
-    markAllBookmarks().finally(() => sendResponse({ ok: true }));
+    syncAllBookmarks().finally(() => sendResponse({ ok: true }));
     return true;
   }
   if (message?.type === "setMarking") {
@@ -194,19 +234,46 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true;
   }
+  if (message?.type === "setBookmarkMarking") {
+    setBookmarkMarking(message.id, message.enabled === true)
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ ok: false, error: String(err) }));
+    return true;
+  }
   return undefined; // not ours
 });
 
 /**
- * Turn the whole new-tab behavior on or off. Persists the choice, then either
- * marks every eligible bookmark or strips the markers back off. The flag is set
- * before the bookmark updates so the onChanged listener doesn't fight them.
- * Returns how many bookmarks changed.
+ * Turn the whole new-tab behavior on or off — the master over the per-bookmark
+ * switches. Turning it ON also clears every per-bookmark opt-out (so all the
+ * individual switches turn on too); turning it OFF gates them all off. Persists
+ * before syncing so the onChanged listener doesn't fight the updates. Returns
+ * how many bookmarks changed.
  */
 async function setMarking(enabled) {
   markingEnabled = enabled;
-  await chrome.storage.local.set({ [MARKING_KEY]: enabled }).catch(() => {});
-  return enabled ? markAllBookmarks() : unmarkAllBookmarks();
+  const toStore = { [MARKING_KEY]: enabled };
+  if (enabled) {
+    optedOut.clear();
+    toStore[OPTOUT_KEY] = [];
+  }
+  await chrome.storage.local.set(toStore).catch(() => {});
+  return syncAllBookmarks();
+}
+
+/**
+ * Opt a single bookmark in (enabled) or out of the new-tab behavior. Persists
+ * the opt-out set first — before syncing the bookmark — so syncBookmark() sees
+ * the new choice and doesn't undo it.
+ */
+async function setBookmarkMarking(id, enabled) {
+  if (enabled) optedOut.delete(id);
+  else optedOut.add(id);
+  await chrome.storage.local
+    .set({ [OPTOUT_KEY]: [...optedOut] })
+    .catch(() => {});
+  const [node] = await chrome.bookmarks.get(id).catch(() => []);
+  if (node?.url) await syncBookmark(id, node.url);
 }
 
 /**

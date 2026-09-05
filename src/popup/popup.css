@@ -361,7 +361,8 @@ ul.node-list ul.node-list {
   border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
 }
 
-.setting:last-child {
+.setting:last-child,
+.setting.no-divider {
   border-bottom: 0;
 }
 
@@ -375,6 +376,132 @@ ul.node-list ul.node-list {
   margin-top: 2px;
   font-size: 11px;
   font-weight: 400;
+  color: var(--fg-muted);
+}
+
+/* Per-bookmark opt-out disclosure inside Behavior. */
+.disclosure-wrap {
+  padding: 2px 0;
+}
+
+/* Nested under the Bookmark bar functionality switch: indent with a left rail
+ * and a subtle divider below to close the grouped block. */
+.disclosure-wrap.nested {
+  margin-left: 6px;
+  padding-left: 10px;
+  border-left: 2px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.disclosure {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.disclosure:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+.disclosure .twisty {
+  flex: 0 0 auto;
+  width: 12px;
+  margin-top: 1px;
+  color: var(--fg-muted);
+  transition: transform 0.12s ease;
+}
+
+.disclosure[aria-expanded="false"] .twisty {
+  transform: rotate(-90deg);
+}
+
+.disclosure-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.disclosure-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.disclosure .hint {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--fg-muted);
+}
+
+.perbookmark-panel {
+  /* Left padding aligns the grid with the "Per bookmark" label (past the
+   * 12px twisty + 6px gap in the disclosure header). */
+  padding: 2px 0 8px 18px;
+}
+
+/* Two bookmarks per row so the list stays compact. */
+.perbookmark-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.pb-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pb-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.pb-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pb-item .switch {
+  flex: 0 0 auto;
+}
+
+/* Slightly smaller switches for the solo bookmark rows. */
+.pb-item .switch-track {
+  width: 30px;
+  height: 16px;
+}
+
+.pb-item .switch-track::after {
+  width: 12px;
+  height: 12px;
+}
+
+.pb-item .switch input:checked + .switch-track::after {
+  transform: translateX(14px);
+}
+
+.pb-empty {
+  margin: 0;
+  padding: 4px 0;
+  font-size: 11px;
   color: var(--fg-muted);
 }
 
@@ -442,6 +569,12 @@ ul.node-list ul.node-list {
 .switch input:focus-visible + .switch-track {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Disabled (e.g. a per-bookmark switch while the master is off). */
+.switch input:disabled + .switch-track {
+  opacity: 0.45;
+  cursor: default;
 }
 
 .btn {

@@ -90,12 +90,29 @@
             <span class="group-title">Behavior</span>
           </button>
           <div class="group-content" id="group-behavior" hidden>
-            <div class="setting">
+            <div class="setting no-divider">
               <label>
                 Bookmark bar functionality <span id="marking-state"></span>
                 <span class="hint" id="marking-hint"></span>
               </label>
               <button type="button" id="marking-toggle" class="btn"></button>
+            </div>
+
+            <div class="disclosure-wrap nested">
+              <button
+                type="button"
+                id="perbookmark-toggle"
+                class="disclosure"
+                aria-expanded="false"
+                aria-controls="perbookmark-panel"
+              >
+                <span class="twisty" aria-hidden="true">▾</span>
+                <span class="disclosure-text">
+                  <span class="disclosure-label">Per bookmark</span>
+                  <span class="hint">Override the switch above for individual bookmarks</span>
+                </span>
+              </button>
+              <div id="perbookmark-panel" class="perbookmark-panel" hidden></div>
             </div>
 
             <div class="setting">
