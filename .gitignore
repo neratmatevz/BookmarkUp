@@ -3,6 +3,7 @@ node_modules/
 
 # Packaged builds
 *.zip
+releases/
 web-ext-artifacts/
 dist/
 

@@ -32,10 +32,13 @@ you'd typed but not yet submitted. Nothing is lost.
 - **Middle-click still works** exactly as before.
 - **A handy popup**, too. Click the BookmarkUp toolbar button (or press **Ctrl+Shift+U**)
   for a searchable list of all your bookmarks - click any to open it in a new tab.
-- **Background mode.** Flip one switch and bookmarks open quietly in background tabs so
-  you can line up several at once.
+- **Background mode.** Flip one switch in Settings and bookmarks open quietly in background
+  tabs so you can line up several at once.
 - **Search & keyboard-friendly.** Type to filter, arrow keys to move, Enter to open.
-- **Light & dark**, following your system theme.
+- **Light, dark, or system.** Pick a theme in Settings, or let it follow your system.
+- **Built-in settings.** A gear in the popup opens a settings panel - choose your theme,
+  toggle background mode, and, if you ever want to, cleanly remove the extension in one
+  step (it restores your bookmarks first).
 
 ## How to use it
 
@@ -43,12 +46,23 @@ you'd typed but not yet submitted. Nothing is lost.
 2. It opens in a **new tab** - and the tab you were on doesn't budge.
 
 That's it. For a full, searchable list of your bookmarks, click the **BookmarkUp** icon in
-the toolbar or press **Ctrl+Shift+U**, and toggle **Background** there if you'd like tabs
-to open without pulling you away.
+the toolbar or press **Ctrl+Shift+U**.
+
+## Settings
+
+Open the popup and click the **⚙ gear** in the top corner (press **Esc** or the back arrow
+to return to your bookmarks). Inside you'll find:
+
+- **Theme** - **System**, **Light**, or **Dark**. Your choice is remembered.
+- **Open in background** - when on, bookmarks open in a background tab so you stay on your
+  current page while queueing up several.
+- **Delete extension** - a clean way to back out completely. It restores your bookmarks to
+  their original links, clears BookmarkUp's saved settings, and uninstalls the extension.
+  It asks you to confirm first, so it can't happen by accident.
 
 ## Install
 
-BookmarkUp is at **v1.0.0**. A public release on the **Chrome Web Store** is on the way - in
+BookmarkUp is at **v1.1.0**. A public release on the **Chrome Web Store** is on the way - in
 the meantime you can install it straight from GitHub:
 
 1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
@@ -79,7 +93,8 @@ no-content network request** (it carries none of your data and returns nothing).
 
 To recognise which clicks are yours to handle, BookmarkUp adds a small, invisible tag to
 your bookmark links. This keeps each bookmark pointing at the same website, so everything
-keeps working normally - and it's fully reversible if you ever stop using the extension.
+keeps working normally - and it's fully reversible: **Delete extension** in Settings strips
+the tags and restores your original bookmarks before it removes itself.
 
 ## License
 
