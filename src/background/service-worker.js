@@ -110,6 +110,7 @@ chrome.bookmarks.onChanged.addListener((id, changeInfo) =>
 );
 
 async function markAllBookmarks() {
+  if (markingSuspended) return;
   try {
     const tree = await chrome.bookmarks.getTree();
     const updates = [];
@@ -129,6 +130,7 @@ async function markAllBookmarks() {
 // Marking a bookmark fires onChanged again, but the marked URL no longer
 // satisfies shouldMark(), so this does not loop.
 function maybeMark(id, url) {
+  if (markingSuspended) return;
   if (url && shouldMark(url)) {
     chrome.bookmarks.update(id, { url: addMarker(url) }).catch(() => {});
   }
@@ -145,33 +147,38 @@ function walkBookmarks(nodes, fn) {
  * Settings messages (from the popup)
  * ------------------------------------------------------------------ */
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type !== "deleteAllData") return; // not ours
+/**
+ * While true, the bookmark listeners stop marking. Set during an uninstall so
+ * unmarkAllBookmarks() isn't instantly undone by onChanged re-marking each
+ * bookmark. The popup calls uninstallSelf itself (it needs a user gesture); if
+ * that fails it sends "resumeMarking" to restore normal operation.
+ */
+let markingSuspended = false;
 
-  deleteAllData()
-    .then(() => sendResponse({ ok: true }))
-    .catch((err) => {
-      const cancelled = /cancell?ed/i.test(String(err?.message ?? err));
-      sendResponse({ ok: false, cancelled, error: String(err) });
-    });
-  return true; // keep the message channel open for the async response
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === "prepareUninstall") {
+    prepareUninstall()
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ ok: false, error: String(err) }));
+    return true; // keep the message channel open for the async response
+  }
+  if (message?.type === "resumeMarking") {
+    markingSuspended = false;
+    markAllBookmarks().finally(() => sendResponse({ ok: true }));
+    return true;
+  }
+  return undefined; // not ours
 });
 
 /**
- * Full reset: restore every bookmark to its original URL, clear stored
- * settings, then uninstall the extension. If the user cancels the browser's
- * uninstall confirmation, re-apply the markers so BookmarkUp keeps working and
- * rethrow so the popup can report it.
+ * Restore every bookmark to its original URL and clear stored settings, in
+ * preparation for the popup uninstalling the extension. Marking is suspended
+ * first so the unmark sticks (see markingSuspended).
  */
-async function deleteAllData() {
+async function prepareUninstall() {
+  markingSuspended = true;
   await unmarkAllBookmarks();
   await chrome.storage.local.clear().catch(() => {});
-  try {
-    await chrome.management.uninstallSelf({ showConfirmDialog: true });
-  } catch (err) {
-    await markAllBookmarks();
-    throw err;
-  }
 }
 
 /**

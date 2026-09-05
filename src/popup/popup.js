@@ -34,6 +34,8 @@ const els = {
   settingsStatus: document.getElementById("settings-status"),
   themeSelect: document.getElementById("theme-select"),
   deleteData: document.getElementById("delete-data"),
+  deleteCancel: document.getElementById("delete-cancel"),
+  deleteConfirm: document.getElementById("delete-confirm"),
 };
 
 init();
@@ -56,6 +58,8 @@ async function init() {
   els.settingsOpen.addEventListener("click", () => showSettings(true));
   els.settingsBack.addEventListener("click", () => showSettings(false));
   els.deleteData.addEventListener("click", onDeleteData);
+  els.deleteCancel.addEventListener("click", resetDeleteButton);
+  wireCollapsibleGroups();
 
   els.search.addEventListener("input", debounce(onSearch, 90));
   els.tree.addEventListener("keydown", onTreeKeydown);
@@ -371,6 +375,21 @@ function showSettings(on) {
   }
 }
 
+/** Each `.group-header` toggles its associated `.group-content`. */
+function wireCollapsibleGroups() {
+  for (const header of document.querySelectorAll(".group-header")) {
+    const content = document.getElementById(
+      header.getAttribute("aria-controls"),
+    );
+    if (!content) continue;
+    header.addEventListener("click", () => {
+      const open = header.getAttribute("aria-expanded") !== "true";
+      header.setAttribute("aria-expanded", String(open));
+      content.hidden = !open;
+    });
+  }
+}
+
 async function loadTheme() {
   try {
     const stored = await chrome.storage.local.get(THEME_KEY);
@@ -401,50 +420,61 @@ function onThemeChange() {
 }
 
 /**
- * Delete-all-data is destructive and irreversible, so require a second click to
- * confirm before handing off to the service worker (which unmarks bookmarks,
- * clears storage, and uninstalls the extension).
+ * Deleting the extension is destructive and irreversible, so require a second
+ * click to confirm. The actual uninstall (chrome.management.uninstallSelf) is
+ * called here in the popup rather than the service worker: it must run in a
+ * user-gesture context, which a click handler has but a message handler does
+ * not. The service worker first restores the bookmarks and clears storage.
  */
 let deleteArmed = false;
 
-function onDeleteData() {
+async function onDeleteData() {
+  // First click arms: the button turns solid red and a back arrow appears to
+  // cancel. A second click on the red button performs the delete.
   if (!deleteArmed) {
     deleteArmed = true;
-    els.deleteData.textContent = "Click again to confirm";
-    els.deleteData.classList.add("confirming");
-    setSettingsStatus("This removes BookmarkUp and restores your bookmarks.");
+    els.deleteData.classList.add("armed");
+    els.deleteData.textContent = "Yes, delete extension";
+    els.deleteCancel.hidden = false;
+    els.deleteConfirm.hidden = false;
     return;
   }
 
   els.deleteData.disabled = true;
-  els.deleteData.classList.remove("confirming");
-  els.deleteData.textContent = "Deleting…";
+  els.deleteCancel.hidden = true;
+  els.deleteConfirm.hidden = true;
+  els.deleteData.textContent = "Removing…";
   setSettingsStatus("Restoring bookmarks and clearing data…");
 
-  chrome.runtime
-    .sendMessage({ type: "deleteAllData" })
-    .then((res) => {
-      // If the browser's uninstall dialog is confirmed, the extension is gone
-      // before this resolves. Reaching here means the user cancelled it.
-      if (res && res.ok === false && res.cancelled) {
-        setSettingsStatus("Uninstall cancelled — nothing was deleted.");
-      } else {
-        setSettingsStatus("Done.");
-      }
-      resetDeleteButton();
-    })
-    .catch(() => {
-      // The worker tearing down mid-uninstall can reject the message; that's
-      // the success path, so don't surface it as an error.
-      resetDeleteButton();
-    });
+  try {
+    // Restore original bookmark URLs and clear stored settings first — once the
+    // extension is uninstalled below, this code can no longer run.
+    const res = await chrome.runtime.sendMessage({ type: "prepareUninstall" });
+    if (!res || res.ok !== true) {
+      throw new Error(res?.error || "Could not restore bookmarks.");
+    }
+
+    await chrome.management.uninstallSelf({ showConfirmDialog: false });
+    // Not reached on success: the extension (and this popup) is gone by now.
+    throw new Error("Uninstall did not complete.");
+  } catch (err) {
+    // Uninstall failed or was blocked — bring the markers back so BookmarkUp
+    // keeps working, and tell the user what happened.
+    chrome.runtime.sendMessage({ type: "resumeMarking" }).catch(() => {});
+    console.error("BookmarkUp:", err);
+    resetDeleteButton();
+    setSettingsStatus(`Couldn't remove the extension: ${err.message}`);
+  }
 }
 
 function resetDeleteButton() {
   deleteArmed = false;
   els.deleteData.disabled = false;
-  els.deleteData.classList.remove("confirming");
-  els.deleteData.textContent = "Delete all data";
+  els.deleteData.classList.remove("armed");
+  els.deleteCancel.hidden = true;
+  els.deleteConfirm.hidden = true;
+  els.deleteData.textContent = "Delete extension";
+  setSettingsStatus("");
 }
 
 function setSettingsStatus(text) {
