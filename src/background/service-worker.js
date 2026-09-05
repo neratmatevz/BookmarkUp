@@ -23,10 +23,12 @@
  */
 
 import { addMarker, hasMarker, shouldMark, stripMarker } from "../shared/url.js";
+import { matchEngine } from "../shared/search-engines.js";
 
 const STORAGE_KEY = "openInBackground";
 const MARKING_KEY = "markingEnabled";
 const OPTOUT_KEY = "optedOut";
+const SAMETAB_KEY = "sameTabEngines";
 const NEW_TAB_GRACE_MS = 2500;
 
 /**
@@ -54,16 +56,26 @@ let markingEnabled = true;
  */
 let optedOut = new Set();
 
+/**
+ * Search-engine ids the user set to open bookmarks in the SAME tab (persisted).
+ * A bookmark clicked while on one of these engines loads in the current tab
+ * instead of a new one. Absence = new tab (the default).
+ */
+let sameTabEngines = new Set();
+
 // Resolves once the persisted preferences are loaded. Marking waits on this so
 // a startup sync can't act before we know the user's choices (the defaults in
 // memory — marking on, nothing opted out — apply only until this settles).
 const ready = chrome.storage.local
-  .get([STORAGE_KEY, MARKING_KEY, OPTOUT_KEY])
+  .get([STORAGE_KEY, MARKING_KEY, OPTOUT_KEY, SAMETAB_KEY])
   .then((stored) => {
     openInBackground = stored[STORAGE_KEY] === true;
     markingEnabled = stored[MARKING_KEY] !== false; // default on
     optedOut = new Set(
       Array.isArray(stored[OPTOUT_KEY]) ? stored[OPTOUT_KEY] : [],
+    );
+    sameTabEngines = new Set(
+      Array.isArray(stored[SAMETAB_KEY]) ? stored[SAMETAB_KEY] : [],
     );
   })
   .catch(() => {});
@@ -79,6 +91,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (OPTOUT_KEY in changes) {
     const next = changes[OPTOUT_KEY].newValue;
     optedOut = new Set(Array.isArray(next) ? next : []);
+  }
+  if (SAMETAB_KEY in changes) {
+    const next = changes[SAMETAB_KEY].newValue;
+    sameTabEngines = new Set(Array.isArray(next) ? next : []);
   }
 });
 
@@ -112,21 +128,43 @@ function isNewTab(tabId) {
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   if (details.frameId !== 0) return;
   if (!hasMarker(details.url)) return;
+  handleMarkedNavigation(details);
+});
 
+async function handleMarkedNavigation(details) {
   const cleanUrl = stripMarker(details.url);
 
   if (isNewTab(details.tabId)) {
     // Middle/ctrl-click already opened a fresh tab for this bookmark (which the
     // 204 rule would otherwise blank). Load the real page there instead.
     chrome.tabs.update(details.tabId, { url: cleanUrl }).catch(logError);
+    return;
+  }
+
+  // Left-click in an existing tab: the 204 redirect keeps that tab put, so we
+  // normally open the real page in a new tab. But if that tab is a search
+  // engine the user set to same-tab, load it here instead.
+  if (await shouldOpenInSameTab(details.tabId)) {
+    chrome.tabs.update(details.tabId, { url: cleanUrl }).catch(logError);
   } else {
-    // Left-click in an existing tab: the 204 redirect keeps that tab where it
-    // is, so open the real page in a new tab.
     chrome.tabs
       .create({ url: cleanUrl, active: !openInBackground })
       .catch(logError);
   }
-});
+}
+
+/** True when the tab's current page is a search engine set to same-tab. */
+async function shouldOpenInSameTab(tabId) {
+  if (sameTabEngines.size === 0) return false;
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    if (!tab?.url) return false;
+    const engine = matchEngine(new URL(tab.url).hostname);
+    return engine ? sameTabEngines.has(engine.id) : false;
+  } catch {
+    return false;
+  }
+}
 
 /* ------------------------------------------------------------------ *
  * Bookmark marker management
@@ -240,8 +278,26 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true;
   }
+  if (message?.type === "setSearchEngine") {
+    setSearchEngine(message.id, message.newTab === true)
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ ok: false, error: String(err) }));
+    return true;
+  }
   return undefined; // not ours
 });
+
+/**
+ * Set whether a search engine opens bookmarks in a new tab (default) or the
+ * same tab. Only affects navigation handling, so nothing to reconcile.
+ */
+async function setSearchEngine(id, newTab) {
+  if (newTab) sameTabEngines.delete(id);
+  else sameTabEngines.add(id);
+  await chrome.storage.local
+    .set({ [SAMETAB_KEY]: [...sameTabEngines] })
+    .catch(() => {});
+}
 
 /**
  * Turn the whole new-tab behavior on or off — the master over the per-bookmark
