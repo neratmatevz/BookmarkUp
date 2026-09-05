@@ -11,6 +11,8 @@
 import { isSafeUrl, stripMarker } from "../shared/url.js";
 
 const STORAGE_KEY = "openInBackground";
+const THEME_KEY = "theme";
+const THEMES = new Set(["system", "light", "dark"]);
 const MAX_SEARCH_RESULTS = 300;
 
 /** @type {{ id: string, title: string, url: string }[]} */
@@ -25,14 +27,39 @@ const els = {
   search: document.getElementById("search-input"),
   status: document.getElementById("status"),
   backgroundToggle: document.getElementById("background-toggle"),
+  viewMain: document.getElementById("view-main"),
+  viewSettings: document.getElementById("view-settings"),
+  settingsOpen: document.getElementById("settings-open"),
+  settingsBack: document.getElementById("settings-back"),
+  settingsStatus: document.getElementById("settings-status"),
+  themeSelect: document.getElementById("theme-select"),
+  deleteData: document.getElementById("delete-data"),
+  deleteCancel: document.getElementById("delete-cancel"),
+  deleteConfirm: document.getElementById("delete-confirm"),
 };
 
 init();
 
 async function init() {
-  openInBackground = await loadBackgroundPreference();
+  // Read preferences up front so the UI opens in the right state.
+  const [theme, background] = await Promise.all([
+    loadTheme(),
+    loadBackgroundPreference(),
+  ]);
+
+  applyTheme(theme);
+  els.themeSelect.value = theme;
+  els.themeSelect.addEventListener("change", onThemeChange);
+
+  openInBackground = background;
   els.backgroundToggle.checked = openInBackground;
   els.backgroundToggle.addEventListener("change", onBackgroundToggle);
+
+  els.settingsOpen.addEventListener("click", () => showSettings(true));
+  els.settingsBack.addEventListener("click", () => showSettings(false));
+  els.deleteData.addEventListener("click", onDeleteData);
+  els.deleteCancel.addEventListener("click", resetDeleteButton);
+  wireCollapsibleGroups();
 
   els.search.addEventListener("input", debounce(onSearch, 90));
   els.tree.addEventListener("keydown", onTreeKeydown);
@@ -263,7 +290,10 @@ function faviconUrl(pageUrl) {
 
 function onGlobalKeydown(event) {
   if (event.key === "Escape") {
-    if (els.search.value) {
+    // In settings, Escape returns to the bookmark list first.
+    if (!els.viewSettings.hidden) {
+      showSettings(false);
+    } else if (els.search.value) {
       els.search.value = "";
       onSearch();
     }
@@ -327,6 +357,128 @@ function onBackgroundToggle() {
     .catch(() => {
       /* preference is best-effort; ignore write failures */
     });
+}
+
+/* ------------------------------------------------------------------ *
+ * Settings
+ * ------------------------------------------------------------------ */
+
+function showSettings(on) {
+  els.viewMain.hidden = on;
+  els.viewSettings.hidden = !on;
+  if (on) {
+    resetDeleteButton();
+    els.themeSelect.focus();
+  } else {
+    setSettingsStatus("");
+    els.search.focus();
+  }
+}
+
+/** Each `.group-header` toggles its associated `.group-content`. */
+function wireCollapsibleGroups() {
+  for (const header of document.querySelectorAll(".group-header")) {
+    const content = document.getElementById(
+      header.getAttribute("aria-controls"),
+    );
+    if (!content) continue;
+    header.addEventListener("click", () => {
+      const open = header.getAttribute("aria-expanded") !== "true";
+      header.setAttribute("aria-expanded", String(open));
+      content.hidden = !open;
+    });
+  }
+}
+
+async function loadTheme() {
+  try {
+    const stored = await chrome.storage.local.get(THEME_KEY);
+    const value = stored[THEME_KEY];
+    return THEMES.has(value) ? value : "system";
+  } catch {
+    return "system";
+  }
+}
+
+/** Apply a theme by toggling data-theme on <html>; CSS does the rest. */
+function applyTheme(theme) {
+  if (theme === "light" || theme === "dark") {
+    document.documentElement.dataset.theme = theme;
+  } else {
+    delete document.documentElement.dataset.theme;
+  }
+}
+
+function onThemeChange() {
+  const theme = THEMES.has(els.themeSelect.value)
+    ? els.themeSelect.value
+    : "system";
+  applyTheme(theme);
+  chrome.storage.local.set({ [THEME_KEY]: theme }).catch(() => {
+    /* best-effort */
+  });
+}
+
+/**
+ * Deleting the extension is destructive and irreversible, so require a second
+ * click to confirm. The actual uninstall (chrome.management.uninstallSelf) is
+ * called here in the popup rather than the service worker: it must run in a
+ * user-gesture context, which a click handler has but a message handler does
+ * not. The service worker first restores the bookmarks and clears storage.
+ */
+let deleteArmed = false;
+
+async function onDeleteData() {
+  // First click arms: the button turns solid red and a back arrow appears to
+  // cancel. A second click on the red button performs the delete.
+  if (!deleteArmed) {
+    deleteArmed = true;
+    els.deleteData.classList.add("armed");
+    els.deleteData.textContent = "Yes, delete extension";
+    els.deleteCancel.hidden = false;
+    els.deleteConfirm.hidden = false;
+    return;
+  }
+
+  els.deleteData.disabled = true;
+  els.deleteCancel.hidden = true;
+  els.deleteConfirm.hidden = true;
+  els.deleteData.textContent = "Removing…";
+  setSettingsStatus("Restoring bookmarks and clearing data…");
+
+  try {
+    // Restore original bookmark URLs and clear stored settings first — once the
+    // extension is uninstalled below, this code can no longer run.
+    const res = await chrome.runtime.sendMessage({ type: "prepareUninstall" });
+    if (!res || res.ok !== true) {
+      throw new Error(res?.error || "Could not restore bookmarks.");
+    }
+
+    await chrome.management.uninstallSelf({ showConfirmDialog: false });
+    // Not reached on success: the extension (and this popup) is gone by now.
+    throw new Error("Uninstall did not complete.");
+  } catch (err) {
+    // Uninstall failed or was blocked — bring the markers back so BookmarkUp
+    // keeps working, and tell the user what happened.
+    chrome.runtime.sendMessage({ type: "resumeMarking" }).catch(() => {});
+    console.error("BookmarkUp:", err);
+    resetDeleteButton();
+    setSettingsStatus(`Couldn't remove the extension: ${err.message}`);
+  }
+}
+
+function resetDeleteButton() {
+  deleteArmed = false;
+  els.deleteData.disabled = false;
+  els.deleteData.classList.remove("armed");
+  els.deleteCancel.hidden = true;
+  els.deleteConfirm.hidden = true;
+  els.deleteData.textContent = "Delete extension";
+  setSettingsStatus("");
+}
+
+function setSettingsStatus(text) {
+  els.settingsStatus.textContent = text;
 }
 
 function setStatus(text) {

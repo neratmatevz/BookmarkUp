@@ -1,3 +1,11 @@
+/*
+ * Theme tokens. The light palette lives on bare :root. The dark palette is
+ * applied in three places so the Theme setting can override the system default
+ * in either direction:
+ *   - :root[data-theme="dark"]         → user forced dark
+ *   - system dark, unless forced light → :root:not([data-theme="light"])
+ * The Theme setting sets/removes data-theme on <html> (see popup.js).
+ */
 :root {
   --bg: #ffffff;
   --fg: #1f2328;
@@ -8,12 +16,36 @@
   --accent: #4f46e5;
   --accent-fg: #ffffff;
   --shadow: rgba(27, 31, 36, 0.12);
+  --off: #cbd5e1;
+  --brand-blue: #0068f6; /* icon blue: toggles + input borders */
+  --danger: #cf222e;
+  --danger-fg: #ffffff;
 
   color-scheme: light dark;
 }
 
+/* Forced dark (Theme → Dark), applied regardless of the system preference. */
+:root[data-theme="dark"] {
+  --bg: #1b1f24;
+  --fg: #e6edf3;
+  --fg-muted: #9198a1;
+  --border: #30363d;
+  --row-hover: #262c34;
+  --row-active: #2f3742;
+  --accent: #7c74ff;
+  --accent-fg: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --off: #4a5261;
+  --brand-blue: #2f86ff; /* icon blue (lightened for dark bg) */
+  --danger: #f85149;
+  --danger-fg: #ffffff;
+
+  color-scheme: dark;
+}
+
+/* System dark — but not when the user forced light (Theme → Light). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #1b1f24;
     --fg: #e6edf3;
     --fg-muted: #9198a1;
@@ -23,7 +55,15 @@
     --accent: #7c74ff;
     --accent-fg: #ffffff;
     --shadow: rgba(0, 0, 0, 0.4);
+    --off: #4a5261;
+    --on: #2ea043;
+    --danger: #f85149;
+    --danger-fg: #ffffff;
   }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 * {
@@ -36,8 +76,9 @@ body {
 }
 
 body {
-  width: 360px;
-  max-height: 560px;
+  width: 400px;
+  height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   font: 13px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -66,19 +107,48 @@ body {
   font-weight: 600;
 }
 
-.toggle {
-  display: flex;
+.icon-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
   color: var(--fg-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
   cursor: pointer;
-  user-select: none;
 }
 
-.toggle input {
-  cursor: pointer;
-  accent-color: var(--accent);
+.icon-btn:hover {
+  background: var(--row-hover);
+  color: var(--fg);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* .icon-btn sets display:inline-flex, which would otherwise beat [hidden]. */
+.icon-btn[hidden] {
+  display: none;
+}
+
+/* Views share the popup's flex column; only one is shown at a time. */
+.view {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* .view sets display:flex, which would otherwise beat the [hidden] UA rule. */
+.view[hidden] {
+  display: none;
 }
 
 .search {
@@ -98,7 +168,7 @@ body {
 }
 
 #search-input:focus {
-  border-color: var(--accent);
+  border-color: var(--brand-blue);
   box-shadow: 0 0 0 2px var(--shadow);
 }
 
@@ -201,8 +271,247 @@ ul.node-list ul.node-list {
   color: var(--fg-muted);
 }
 
+/* ------------------------------------------------------------------ *
+ * Settings view
+ * ------------------------------------------------------------------ */
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-head h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 6px 12px 12px;
+}
+
+/* Collapsible settings group. */
+.group {
+  border-bottom: 1px solid var(--border);
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.group-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+.group-header .twisty {
+  flex: 0 0 auto;
+  width: 12px;
+  color: var(--fg-muted);
+  transition: transform 0.12s ease;
+}
+
+.group-header[aria-expanded="false"] .twisty {
+  transform: rotate(-90deg);
+}
+
+.group-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+}
+
+.group-content {
+  padding: 0 2px 8px;
+}
+
+.group-content[hidden] {
+  display: none;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.setting:last-child {
+  border-bottom: 0;
+}
+
+.setting label {
+  font-weight: 500;
+}
+
+.setting .hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--fg-muted);
+}
+
+.select {
+  padding: 5px 8px;
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.select:focus {
+  border-color: var(--brand-blue);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--shadow);
+}
+
+/* Green-when-on / neutral-when-off switch. */
+.switch {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-track {
+  display: block;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--off);
+  transition: background 0.15s ease;
+}
+
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px var(--shadow);
+  transition: transform 0.15s ease;
+}
+
+.switch input:checked + .switch-track {
+  background: var(--brand-blue);
+}
+
+.switch input:checked + .switch-track::after {
+  transform: translateX(16px);
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn {
+  padding: 7px 12px;
+  font: inherit;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Delete lives in a footer pinned to the bottom of the settings view. */
+.settings-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--border);
+}
+
+.delete-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+
+/* The cancel arrow reads as a button, so give it a border like one. */
+.delete-row .icon-btn {
+  border: 1px solid var(--border);
+}
+
+.delete-confirm {
+  margin: 0;
+  padding: 10px 12px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--danger);
+}
+
+.settings-footer .status {
+  border-top: 0;
+}
+
+/* Default: transparent with a red border. Armed (confirming): solid red. */
+.btn-delete {
+  border-color: var(--danger);
+  background: transparent;
+  color: var(--danger);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.btn-delete:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.btn-delete.armed {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--danger-fg);
+}
+
+.btn-delete.armed:hover {
+  background: color-mix(in srgb, var(--danger) 88%, black);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .row.folder .twisty {
+  .row.folder .twisty,
+  .group-header .twisty,
+  .switch-track,
+  .switch-track::after,
+  .btn-delete {
     transition: none;
   }
 }

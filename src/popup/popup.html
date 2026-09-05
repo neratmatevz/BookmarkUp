@@ -12,26 +12,108 @@
         <img src="../../icons/icon-32.png" width="20" height="20" alt="" />
         <h1>BookmarkUp</h1>
       </div>
-      <label class="toggle" title="Open bookmarks in a background tab and keep this panel open">
-        <input type="checkbox" id="background-toggle" />
-        <span>Background</span>
-      </label>
+      <button
+        type="button"
+        id="settings-open"
+        class="icon-btn"
+        aria-label="Settings"
+        title="Settings"
+      >
+        <span aria-hidden="true">⚙</span>
+      </button>
     </header>
 
-    <div class="search">
-      <input
-        type="search"
-        id="search-input"
-        placeholder="Search bookmarks…"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="Search bookmarks"
-      />
-    </div>
+    <!-- Main view: search + bookmark tree -->
+    <section id="view-main" class="view">
+      <div class="search">
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Search bookmarks…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Search bookmarks"
+        />
+      </div>
 
-    <main id="tree" class="tree" tabindex="-1" aria-label="Bookmarks"></main>
+      <main id="tree" class="tree" tabindex="-1" aria-label="Bookmarks"></main>
 
-    <p id="status" class="status" role="status" aria-live="polite"></p>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- Settings view -->
+    <section id="view-settings" class="view settings" hidden aria-label="Settings">
+      <div class="settings-head">
+        <button
+          type="button"
+          id="settings-back"
+          class="icon-btn"
+          aria-label="Back to bookmarks"
+          title="Back"
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+        <h2>Settings</h2>
+      </div>
+
+      <div class="settings-body">
+        <section class="group">
+          <button
+            type="button"
+            class="group-header"
+            aria-expanded="true"
+            aria-controls="group-general"
+          >
+            <span class="twisty" aria-hidden="true">▾</span>
+            <span class="group-title">General</span>
+          </button>
+          <div class="group-content" id="group-general">
+            <div class="setting">
+              <label for="theme-select">Theme</label>
+              <select id="theme-select" class="select">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </div>
+
+            <div class="setting">
+              <label for="background-toggle">
+                Open in background
+                <span class="hint">Bookmarks open without closing the extension popup</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" id="background-toggle" />
+                <span class="switch-track" aria-hidden="true"></span>
+              </label>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="settings-footer">
+        <p id="delete-confirm" class="delete-confirm" hidden>
+          Are you sure? This restores your bookmarks and removes BookmarkUp -
+          it can't be undone.
+        </p>
+        <div class="delete-row">
+          <button
+            type="button"
+            id="delete-cancel"
+            class="icon-btn"
+            hidden
+            aria-label="Keep the extension"
+            title="Keep the extension"
+          >
+            <span aria-hidden="true">←</span>
+          </button>
+          <button type="button" id="delete-data" class="btn btn-delete">
+            Delete extension
+          </button>
+        </div>
+        <p id="settings-status" class="status" role="status" aria-live="polite"></p>
+      </footer>
+    </section>
 
     <script src="popup.js" type="module"></script>
   </body>

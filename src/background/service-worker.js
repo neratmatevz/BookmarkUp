@@ -110,6 +110,7 @@ chrome.bookmarks.onChanged.addListener((id, changeInfo) =>
 );
 
 async function markAllBookmarks() {
+  if (markingSuspended) return;
   try {
     const tree = await chrome.bookmarks.getTree();
     const updates = [];
@@ -129,6 +130,7 @@ async function markAllBookmarks() {
 // Marking a bookmark fires onChanged again, but the marked URL no longer
 // satisfies shouldMark(), so this does not loop.
 function maybeMark(id, url) {
+  if (markingSuspended) return;
   if (url && shouldMark(url)) {
     chrome.bookmarks.update(id, { url: addMarker(url) }).catch(() => {});
   }
@@ -139,6 +141,44 @@ function walkBookmarks(nodes, fn) {
     fn(node);
     if (node.children) walkBookmarks(node.children, fn);
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * Settings messages (from the popup)
+ * ------------------------------------------------------------------ */
+
+/**
+ * While true, the bookmark listeners stop marking. Set during an uninstall so
+ * unmarkAllBookmarks() isn't instantly undone by onChanged re-marking each
+ * bookmark. The popup calls uninstallSelf itself (it needs a user gesture); if
+ * that fails it sends "resumeMarking" to restore normal operation.
+ */
+let markingSuspended = false;
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === "prepareUninstall") {
+    prepareUninstall()
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ ok: false, error: String(err) }));
+    return true; // keep the message channel open for the async response
+  }
+  if (message?.type === "resumeMarking") {
+    markingSuspended = false;
+    markAllBookmarks().finally(() => sendResponse({ ok: true }));
+    return true;
+  }
+  return undefined; // not ours
+});
+
+/**
+ * Restore every bookmark to its original URL and clear stored settings, in
+ * preparation for the popup uninstalling the extension. Marking is suspended
+ * first so the unmark sticks (see markingSuspended).
+ */
+async function prepareUninstall() {
+  markingSuspended = true;
+  await unmarkAllBookmarks();
+  await chrome.storage.local.clear().catch(() => {});
 }
 
 /**
