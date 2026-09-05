@@ -29,6 +29,7 @@ const STORAGE_KEY = "openInBackground";
 const MARKING_KEY = "markingEnabled";
 const OPTOUT_KEY = "optedOut";
 const SAMETAB_KEY = "sameTabEngines";
+const SAMESITE_KEY = "sameSite";
 const NEW_TAB_GRACE_MS = 2500;
 
 /**
@@ -63,11 +64,19 @@ let optedOut = new Set();
  */
 let sameTabEngines = new Set();
 
+/**
+ * Whether a bookmark for the domain the current tab is already on opens in that
+ * tab instead of a new one (persisted, default false = new tab). Compared on
+ * the full hostname — only the exact same domain counts, not other domains or
+ * subdomains.
+ */
+let sameSite = false;
+
 // Resolves once the persisted preferences are loaded. Marking waits on this so
 // a startup sync can't act before we know the user's choices (the defaults in
 // memory — marking on, nothing opted out — apply only until this settles).
 const ready = chrome.storage.local
-  .get([STORAGE_KEY, MARKING_KEY, OPTOUT_KEY, SAMETAB_KEY])
+  .get([STORAGE_KEY, MARKING_KEY, OPTOUT_KEY, SAMETAB_KEY, SAMESITE_KEY])
   .then((stored) => {
     openInBackground = stored[STORAGE_KEY] === true;
     markingEnabled = stored[MARKING_KEY] !== false; // default on
@@ -77,6 +86,7 @@ const ready = chrome.storage.local
     sameTabEngines = new Set(
       Array.isArray(stored[SAMETAB_KEY]) ? stored[SAMETAB_KEY] : [],
     );
+    sameSite = stored[SAMESITE_KEY] === true;
   })
   .catch(() => {});
 
@@ -95,6 +105,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (SAMETAB_KEY in changes) {
     const next = changes[SAMETAB_KEY].newValue;
     sameTabEngines = new Set(Array.isArray(next) ? next : []);
+  }
+  if (SAMESITE_KEY in changes) {
+    sameSite = changes[SAMESITE_KEY].newValue === true;
   }
 });
 
@@ -142,9 +155,9 @@ async function handleMarkedNavigation(details) {
   }
 
   // Left-click in an existing tab: the 204 redirect keeps that tab put, so we
-  // normally open the real page in a new tab. But if that tab is a search
-  // engine the user set to same-tab, load it here instead.
-  if (await shouldOpenInSameTab(details.tabId)) {
+  // normally open the real page in a new tab. But same-site behavior or a
+  // search engine set to same-tab can send it to the current tab instead.
+  if (await shouldOpenInCurrentTab(details.tabId, cleanUrl)) {
     chrome.tabs.update(details.tabId, { url: cleanUrl }).catch(logError);
   } else {
     chrome.tabs
@@ -153,17 +166,46 @@ async function handleMarkedNavigation(details) {
   }
 }
 
-/** True when the tab's current page is a search engine set to same-tab. */
-async function shouldOpenInSameTab(tabId) {
-  if (sameTabEngines.size === 0) return false;
+/**
+ * True when the clicked bookmark should load in the current tab rather than a
+ * new one — either the bookmark is for the same domain the tab is already on
+ * (same-site behavior), or that domain is a search engine set to same-tab.
+ * Reads the current tab once and checks both.
+ */
+async function shouldOpenInCurrentTab(tabId, cleanUrl) {
+  if (!sameSite && sameTabEngines.size === 0) return false;
   try {
     const tab = await chrome.tabs.get(tabId);
     if (!tab?.url) return false;
-    const engine = matchEngine(new URL(tab.url).hostname);
-    return engine ? sameTabEngines.has(engine.id) : false;
+    const currentHost = new URL(tab.url).hostname;
+
+    // Same-site: the bookmark's destination is the domain we're already on.
+    // A leading "www." is ignored on both so youtube.com and www.youtube.com
+    // count as the same site.
+    if (sameSite) {
+      try {
+        const bookmarkHost = new URL(cleanUrl).hostname;
+        if (baseHost(bookmarkHost) === baseHost(currentHost)) return true;
+      } catch {
+        /* unparseable bookmark URL — fall through to the engine check */
+      }
+    }
+
+    // Search engine the user set to open bookmarks in the same tab.
+    if (sameTabEngines.size > 0) {
+      const engine = matchEngine(currentHost);
+      if (engine && sameTabEngines.has(engine.id)) return true;
+    }
+
+    return false;
   } catch {
     return false;
   }
+}
+
+/** Hostname normalized for same-site comparison: lowercased, "www." dropped. */
+function baseHost(hostname) {
+  return hostname.toLowerCase().replace(/^www\./, "");
 }
 
 /* ------------------------------------------------------------------ *

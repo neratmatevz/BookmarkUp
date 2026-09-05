@@ -391,6 +391,12 @@ ul.node-list ul.node-list {
 /* Per-bookmark opt-out disclosure inside Behavior. */
 .disclosure-wrap {
   padding: 2px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+/* No trailing divider when a disclosure is the last thing in the section. */
+.disclosure-wrap:last-child {
+  border-bottom: 0;
 }
 
 /* Nested under the Bookmark bar functionality switch: indent with a left rail

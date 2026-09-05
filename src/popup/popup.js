@@ -15,6 +15,7 @@ const STORAGE_KEY = "openInBackground";
 const MARKING_KEY = "markingEnabled";
 const OPTOUT_KEY = "optedOut";
 const SAMETAB_KEY = "sameTabEngines";
+const SAMESITE_KEY = "sameSite";
 const THEME_KEY = "theme";
 const THEMES = new Set(["system", "light", "dark"]);
 const MAX_SEARCH_RESULTS = 300;
@@ -38,6 +39,7 @@ const els = {
   search: document.getElementById("search-input"),
   status: document.getElementById("status"),
   backgroundToggle: document.getElementById("background-toggle"),
+  sameSiteToggle: document.getElementById("samesite-toggle"),
   viewMain: document.getElementById("view-main"),
   viewSettings: document.getElementById("view-settings"),
   settingsOpen: document.getElementById("settings-open"),
@@ -60,13 +62,15 @@ init();
 
 async function init() {
   // Read preferences up front so the UI opens in the right state.
-  const [theme, background, marking, optOut, sameTab] = await Promise.all([
-    loadTheme(),
-    loadBackgroundPreference(),
-    loadMarkingEnabled(),
-    loadOptedOut(),
-    loadSameTabEngines(),
-  ]);
+  const [theme, background, marking, optOut, sameTab, sameSite] =
+    await Promise.all([
+      loadTheme(),
+      loadBackgroundPreference(),
+      loadMarkingEnabled(),
+      loadOptedOut(),
+      loadSameTabEngines(),
+      loadSameSite(),
+    ]);
 
   applyTheme(theme);
   els.themeSelect.value = theme;
@@ -84,6 +88,9 @@ async function init() {
 
   sameTabEngines = sameTab;
   els.searchEngineToggle.addEventListener("click", onSearchEngineToggle);
+
+  els.sameSiteToggle.checked = sameSite;
+  els.sameSiteToggle.addEventListener("change", onSameSiteToggle);
 
   els.settingsOpen.addEventListener("click", () => showSettings(true));
   els.settingsBack.addEventListener("click", () => showSettings(false));
@@ -627,6 +634,33 @@ function onEngineToggle(id, input) {
     .sendMessage({ type: "setSearchEngine", id, newTab })
     .catch(() => {
       /* best-effort; the local mirror already reflects the intent */
+    });
+}
+
+/* ------------------------------------------------------------------ *
+ * Same-site behavior
+ * ------------------------------------------------------------------ */
+
+async function loadSameSite() {
+  try {
+    const stored = await chrome.storage.local.get(SAMESITE_KEY);
+    return stored[SAMESITE_KEY] === true; // default off (new tab)
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * When on, a bookmark for the domain the current tab is already on opens in
+ * that tab instead of a new one. Navigation-only, so — like the background
+ * preference — the service worker just reads the stored value (via
+ * storage.onChanged); no reconcile or message needed.
+ */
+function onSameSiteToggle() {
+  chrome.storage.local
+    .set({ [SAMESITE_KEY]: els.sameSiteToggle.checked })
+    .catch(() => {
+      /* preference is best-effort; ignore write failures */
     });
 }
 
