@@ -11,6 +11,7 @@
 import { isSafeUrl, stripMarker } from "../shared/url.js";
 
 const STORAGE_KEY = "openInBackground";
+const MARKING_KEY = "markingEnabled";
 const THEME_KEY = "theme";
 const THEMES = new Set(["system", "light", "dark"]);
 const MAX_SEARCH_RESULTS = 300;
@@ -20,6 +21,7 @@ let searchIndex = [];
 /** Cached bookmark tree from init(), reused when the search box is cleared. */
 let cachedRoots = [];
 let openInBackground = false;
+let markingEnabled = true;
 let folderSeq = 0;
 
 const els = {
@@ -33,6 +35,9 @@ const els = {
   settingsBack: document.getElementById("settings-back"),
   settingsStatus: document.getElementById("settings-status"),
   themeSelect: document.getElementById("theme-select"),
+  markingToggle: document.getElementById("marking-toggle"),
+  markingState: document.getElementById("marking-state"),
+  markingHint: document.getElementById("marking-hint"),
   deleteData: document.getElementById("delete-data"),
   deleteCancel: document.getElementById("delete-cancel"),
   deleteConfirm: document.getElementById("delete-confirm"),
@@ -42,9 +47,10 @@ init();
 
 async function init() {
   // Read preferences up front so the UI opens in the right state.
-  const [theme, background] = await Promise.all([
+  const [theme, background, marking] = await Promise.all([
     loadTheme(),
     loadBackgroundPreference(),
+    loadMarkingEnabled(),
   ]);
 
   applyTheme(theme);
@@ -54,6 +60,9 @@ async function init() {
   openInBackground = background;
   els.backgroundToggle.checked = openInBackground;
   els.backgroundToggle.addEventListener("change", onBackgroundToggle);
+
+  updateMarkingUI(marking);
+  els.markingToggle.addEventListener("click", onMarkingToggle);
 
   els.settingsOpen.addEventListener("click", () => showSettings(true));
   els.settingsBack.addEventListener("click", () => showSettings(false));
@@ -357,6 +366,61 @@ function onBackgroundToggle() {
     .catch(() => {
       /* preference is best-effort; ignore write failures */
     });
+}
+
+/* ------------------------------------------------------------------ *
+ * Unmark / re-mark bookmarks
+ * ------------------------------------------------------------------ */
+
+async function loadMarkingEnabled() {
+  try {
+    const stored = await chrome.storage.local.get(MARKING_KEY);
+    return stored[MARKING_KEY] !== false; // default on
+  } catch {
+    return true;
+  }
+}
+
+/** Reflect the current marking state in the button, heading, and hint. */
+function updateMarkingUI(enabled) {
+  markingEnabled = enabled;
+
+  // Button label is the action; colour it to match (blue = turn on, red = off).
+  els.markingToggle.textContent = enabled ? "Turn OFF" : "Turn ON";
+  els.markingToggle.classList.toggle("btn-red", enabled);
+  els.markingToggle.classList.toggle("btn-blue", !enabled);
+
+  // Coloured ON/OFF word sits in the setting's heading.
+  els.markingState.textContent = enabled ? "ON" : "OFF";
+  els.markingState.className = enabled ? "state-on" : "state-off";
+
+  els.markingHint.textContent = enabled
+    ? "Left-click a bookmark to open it in a new tab."
+    : "Bookmarks open in the current tab, default behavior.";
+}
+
+/**
+ * Toggle the new-tab behavior. The service worker persists the choice and
+ * either strips the markers from every bookmark or re-applies them.
+ */
+async function onMarkingToggle() {
+  const next = !markingEnabled;
+  els.markingToggle.disabled = true;
+  try {
+    const res = await chrome.runtime.sendMessage({
+      type: "setMarking",
+      enabled: next,
+    });
+    if (!res || res.ok !== true) {
+      throw new Error(res?.error || "Could not update bookmarks.");
+    }
+    updateMarkingUI(next);
+  } catch (err) {
+    // Leave the UI on the previous state; nothing changed on failure.
+    console.error("BookmarkUp:", err);
+  } finally {
+    els.markingToggle.disabled = false;
+  }
 }
 
 /* ------------------------------------------------------------------ *

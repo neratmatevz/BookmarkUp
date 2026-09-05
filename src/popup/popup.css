@@ -103,8 +103,8 @@ body {
 
 .brand h1 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
 }
 
 .icon-btn {
@@ -285,7 +285,7 @@ ul.node-list ul.node-list {
 
 .settings-head h2 {
   margin: 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -295,9 +295,15 @@ ul.node-list ul.node-list {
   padding: 6px 12px 12px;
 }
 
-/* Collapsible settings group. */
+/* Collapsible settings group. The section divider is a solid full-strength
+ * line; per-setting dividers inside are lighter (see .setting) so section
+ * boundaries read as stronger than the rows within them. */
 .group {
   border-bottom: 1px solid var(--border);
+}
+
+.group + .group {
+  margin-top: 4px;
 }
 
 .group-header {
@@ -331,11 +337,11 @@ ul.node-list ul.node-list {
 }
 
 .group-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--fg-muted);
+  color: var(--fg);
 }
 
 .group-content {
@@ -352,7 +358,7 @@ ul.node-list ul.node-list {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
 }
 
 .setting:last-child {
@@ -360,6 +366,7 @@ ul.node-list ul.node-list {
 }
 
 .setting label {
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -451,6 +458,39 @@ ul.node-list ul.node-list {
 .btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+/* Outline coloured buttons (used by the Bookmark bar functionality toggle):
+ * transparent fill, coloured border + text. */
+.btn-blue {
+  border-color: var(--brand-blue);
+  background: transparent;
+  color: var(--brand-blue);
+}
+
+.btn-red {
+  border-color: var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.btn-blue:hover {
+  background: color-mix(in srgb, var(--brand-blue) 12%, transparent);
+}
+
+.btn-red:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* Coloured ON/OFF words in the hint text. */
+.state-on {
+  font-weight: 700;
+  color: var(--brand-blue);
+}
+
+.state-off {
+  font-weight: 700;
+  color: var(--danger);
 }
 
 /* Delete lives in a footer pinned to the bottom of the settings view. */
