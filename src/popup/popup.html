@@ -126,7 +126,7 @@
               <div id="perbookmark-panel" class="perbookmark-panel" hidden></div>
             </div>
 
-            <div class="disclosure-wrap">
+            <div class="disclosure-wrap disclosure-wrap--engine">
               <button
                 type="button"
                 id="searchengine-toggle"
@@ -143,6 +143,17 @@
                 </span>
               </button>
               <div id="searchengine-panel" class="searchengine-panel" hidden></div>
+            </div>
+
+            <div class="setting">
+              <label for="samesite-toggle">
+                Same-site in current tab
+                <span class="hint">When a bookmark points to the site you're already on, open it in same tab</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" id="samesite-toggle" />
+                <span class="switch-track" aria-hidden="true"></span>
+              </label>
             </div>
           </div>
         </section>
