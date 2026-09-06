@@ -10,15 +10,9 @@
 
 import { isSafeUrl, shouldMark, stripMarker } from "../shared/url.js";
 import { SEARCH_ENGINES } from "../shared/search-engines.js";
+import { KEYS, MSG, MAX_SEARCH_RESULTS } from "../shared/constants.js";
 
-const STORAGE_KEY = "openInBackground";
-const MARKING_KEY = "markingEnabled";
-const OPTOUT_KEY = "optedOut";
-const SAMETAB_KEY = "sameTabEngines";
-const SAMESITE_KEY = "sameSite";
-const THEME_KEY = "theme";
 const THEMES = new Set(["system", "light", "dark"]);
-const MAX_SEARCH_RESULTS = 300;
 
 /** @type {{ id: string, title: string, url: string }[]} */
 let searchIndex = [];
@@ -380,8 +374,8 @@ function isVisible(el) {
 
 async function loadBackgroundPreference() {
   try {
-    const stored = await chrome.storage.local.get(STORAGE_KEY);
-    return stored[STORAGE_KEY] === true;
+    const stored = await chrome.storage.local.get(KEYS.openInBackground);
+    return stored[KEYS.openInBackground] === true;
   } catch {
     return false;
   }
@@ -390,7 +384,7 @@ async function loadBackgroundPreference() {
 function onBackgroundToggle() {
   openInBackground = els.backgroundToggle.checked;
   chrome.storage.local
-    .set({ [STORAGE_KEY]: openInBackground })
+    .set({ [KEYS.openInBackground]: openInBackground })
     .catch(() => {
       /* preference is best-effort; ignore write failures */
     });
@@ -402,8 +396,8 @@ function onBackgroundToggle() {
 
 async function loadMarkingEnabled() {
   try {
-    const stored = await chrome.storage.local.get(MARKING_KEY);
-    return stored[MARKING_KEY] !== false; // default on
+    const stored = await chrome.storage.local.get(KEYS.markingEnabled);
+    return stored[KEYS.markingEnabled] !== false; // default on
   } catch {
     return true;
   }
@@ -439,7 +433,7 @@ async function onMarkingToggle() {
   els.markingToggle.disabled = true;
   try {
     const res = await chrome.runtime.sendMessage({
-      type: "setMarking",
+      type: MSG.setMarking,
       enabled: next,
     });
     if (!res || res.ok !== true) {
@@ -462,8 +456,8 @@ async function onMarkingToggle() {
 
 async function loadOptedOut() {
   try {
-    const stored = await chrome.storage.local.get(OPTOUT_KEY);
-    const list = stored[OPTOUT_KEY];
+    const stored = await chrome.storage.local.get(KEYS.optedOut);
+    const list = stored[KEYS.optedOut];
     return new Set(Array.isArray(list) ? list : []);
   } catch {
     return new Set();
@@ -547,7 +541,7 @@ function onBookmarkToggle(id, input) {
   if (enabled) optedOut.delete(id);
   else optedOut.add(id);
   chrome.runtime
-    .sendMessage({ type: "setBookmarkMarking", id, enabled })
+    .sendMessage({ type: MSG.setBookmarkMarking, id, enabled })
     .catch(() => {
       /* best-effort; the local mirror already reflects the intent */
     });
@@ -559,8 +553,8 @@ function onBookmarkToggle(id, input) {
 
 async function loadSameTabEngines() {
   try {
-    const stored = await chrome.storage.local.get(SAMETAB_KEY);
-    const list = stored[SAMETAB_KEY];
+    const stored = await chrome.storage.local.get(KEYS.sameTabEngines);
+    const list = stored[KEYS.sameTabEngines];
     return new Set(Array.isArray(list) ? list : []);
   } catch {
     return new Set();
@@ -631,7 +625,7 @@ function onEngineToggle(id, input) {
   if (newTab) sameTabEngines.delete(id);
   else sameTabEngines.add(id);
   chrome.runtime
-    .sendMessage({ type: "setSearchEngine", id, newTab })
+    .sendMessage({ type: MSG.setSearchEngine, id, newTab })
     .catch(() => {
       /* best-effort; the local mirror already reflects the intent */
     });
@@ -643,8 +637,8 @@ function onEngineToggle(id, input) {
 
 async function loadSameSite() {
   try {
-    const stored = await chrome.storage.local.get(SAMESITE_KEY);
-    return stored[SAMESITE_KEY] === true; // default off (new tab)
+    const stored = await chrome.storage.local.get(KEYS.sameSite);
+    return stored[KEYS.sameSite] === true; // default off (new tab)
   } catch {
     return false;
   }
@@ -658,7 +652,7 @@ async function loadSameSite() {
  */
 function onSameSiteToggle() {
   chrome.storage.local
-    .set({ [SAMESITE_KEY]: els.sameSiteToggle.checked })
+    .set({ [KEYS.sameSite]: els.sameSiteToggle.checked })
     .catch(() => {
       /* preference is best-effort; ignore write failures */
     });
@@ -697,8 +691,8 @@ function wireCollapsibleGroups() {
 
 async function loadTheme() {
   try {
-    const stored = await chrome.storage.local.get(THEME_KEY);
-    const value = stored[THEME_KEY];
+    const stored = await chrome.storage.local.get(KEYS.theme);
+    const value = stored[KEYS.theme];
     return THEMES.has(value) ? value : "system";
   } catch {
     return "system";
@@ -719,7 +713,7 @@ function onThemeChange() {
     ? els.themeSelect.value
     : "system";
   applyTheme(theme);
-  chrome.storage.local.set({ [THEME_KEY]: theme }).catch(() => {
+  chrome.storage.local.set({ [KEYS.theme]: theme }).catch(() => {
     /* best-effort */
   });
 }
@@ -754,7 +748,7 @@ async function onDeleteData() {
   try {
     // Restore original bookmark URLs and clear stored settings first — once the
     // extension is uninstalled below, this code can no longer run.
-    const res = await chrome.runtime.sendMessage({ type: "prepareUninstall" });
+    const res = await chrome.runtime.sendMessage({ type: MSG.prepareUninstall });
     if (!res || res.ok !== true) {
       throw new Error(res?.error || "Could not restore bookmarks.");
     }
@@ -765,7 +759,7 @@ async function onDeleteData() {
   } catch (err) {
     // Uninstall failed or was blocked — bring the markers back so BookmarkUp
     // keeps working, and tell the user what happened.
-    chrome.runtime.sendMessage({ type: "resumeMarking" }).catch(() => {});
+    chrome.runtime.sendMessage({ type: MSG.resumeMarking }).catch(() => {});
     console.error("BookmarkUp:", err);
     resetDeleteButton();
     setSettingsStatus(`Couldn't remove the extension: ${err.message}`);

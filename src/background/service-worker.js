@@ -24,13 +24,7 @@
 
 import { addMarker, hasMarker, shouldMark, stripMarker } from "../shared/url.js";
 import { matchEngine } from "../shared/search-engines.js";
-
-const STORAGE_KEY = "openInBackground";
-const MARKING_KEY = "markingEnabled";
-const OPTOUT_KEY = "optedOut";
-const SAMETAB_KEY = "sameTabEngines";
-const SAMESITE_KEY = "sameSite";
-const NEW_TAB_GRACE_MS = 2500;
+import { KEYS, MSG, NEW_TAB_GRACE_MS } from "../shared/constants.js";
 
 /**
  * Recently created tabs (tabId -> createdAt ms). A bookmark opened via
@@ -76,38 +70,38 @@ let sameSite = false;
 // a startup sync can't act before we know the user's choices (the defaults in
 // memory — marking on, nothing opted out — apply only until this settles).
 const ready = chrome.storage.local
-  .get([STORAGE_KEY, MARKING_KEY, OPTOUT_KEY, SAMETAB_KEY, SAMESITE_KEY])
+  .get([KEYS.openInBackground, KEYS.markingEnabled, KEYS.optedOut, KEYS.sameTabEngines, KEYS.sameSite])
   .then((stored) => {
-    openInBackground = stored[STORAGE_KEY] === true;
-    markingEnabled = stored[MARKING_KEY] !== false; // default on
+    openInBackground = stored[KEYS.openInBackground] === true;
+    markingEnabled = stored[KEYS.markingEnabled] !== false; // default on
     optedOut = new Set(
-      Array.isArray(stored[OPTOUT_KEY]) ? stored[OPTOUT_KEY] : [],
+      Array.isArray(stored[KEYS.optedOut]) ? stored[KEYS.optedOut] : [],
     );
     sameTabEngines = new Set(
-      Array.isArray(stored[SAMETAB_KEY]) ? stored[SAMETAB_KEY] : [],
+      Array.isArray(stored[KEYS.sameTabEngines]) ? stored[KEYS.sameTabEngines] : [],
     );
-    sameSite = stored[SAMESITE_KEY] === true;
+    sameSite = stored[KEYS.sameSite] === true;
   })
   .catch(() => {});
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "local") return;
-  if (STORAGE_KEY in changes) {
-    openInBackground = changes[STORAGE_KEY].newValue === true;
+  if (KEYS.openInBackground in changes) {
+    openInBackground = changes[KEYS.openInBackground].newValue === true;
   }
-  if (MARKING_KEY in changes) {
-    markingEnabled = changes[MARKING_KEY].newValue !== false;
+  if (KEYS.markingEnabled in changes) {
+    markingEnabled = changes[KEYS.markingEnabled].newValue !== false;
   }
-  if (OPTOUT_KEY in changes) {
-    const next = changes[OPTOUT_KEY].newValue;
+  if (KEYS.optedOut in changes) {
+    const next = changes[KEYS.optedOut].newValue;
     optedOut = new Set(Array.isArray(next) ? next : []);
   }
-  if (SAMETAB_KEY in changes) {
-    const next = changes[SAMETAB_KEY].newValue;
+  if (KEYS.sameTabEngines in changes) {
+    const next = changes[KEYS.sameTabEngines].newValue;
     sameTabEngines = new Set(Array.isArray(next) ? next : []);
   }
-  if (SAMESITE_KEY in changes) {
-    sameSite = changes[SAMESITE_KEY].newValue === true;
+  if (KEYS.sameSite in changes) {
+    sameSite = changes[KEYS.sameSite].newValue === true;
   }
 });
 
@@ -297,30 +291,30 @@ function walkBookmarks(nodes, fn) {
 let markingSuspended = false;
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type === "prepareUninstall") {
+  if (message?.type === MSG.prepareUninstall) {
     prepareUninstall()
       .then(() => sendResponse({ ok: true }))
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true; // keep the message channel open for the async response
   }
-  if (message?.type === "resumeMarking") {
+  if (message?.type === MSG.resumeMarking) {
     markingSuspended = false;
     syncAllBookmarks().finally(() => sendResponse({ ok: true }));
     return true;
   }
-  if (message?.type === "setMarking") {
+  if (message?.type === MSG.setMarking) {
     setMarking(message.enabled === true)
       .then((count) => sendResponse({ ok: true, count }))
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true;
   }
-  if (message?.type === "setBookmarkMarking") {
+  if (message?.type === MSG.setBookmarkMarking) {
     setBookmarkMarking(message.id, message.enabled === true)
       .then(() => sendResponse({ ok: true }))
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true;
   }
-  if (message?.type === "setSearchEngine") {
+  if (message?.type === MSG.setSearchEngine) {
     setSearchEngine(message.id, message.newTab === true)
       .then(() => sendResponse({ ok: true }))
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
@@ -337,7 +331,7 @@ async function setSearchEngine(id, newTab) {
   if (newTab) sameTabEngines.delete(id);
   else sameTabEngines.add(id);
   await chrome.storage.local
-    .set({ [SAMETAB_KEY]: [...sameTabEngines] })
+    .set({ [KEYS.sameTabEngines]: [...sameTabEngines] })
     .catch(() => {});
 }
 
@@ -350,10 +344,10 @@ async function setSearchEngine(id, newTab) {
  */
 async function setMarking(enabled) {
   markingEnabled = enabled;
-  const toStore = { [MARKING_KEY]: enabled };
+  const toStore = { [KEYS.markingEnabled]: enabled };
   if (enabled) {
     optedOut.clear();
-    toStore[OPTOUT_KEY] = [];
+    toStore[KEYS.optedOut] = [];
   }
   await chrome.storage.local.set(toStore).catch(() => {});
   return syncAllBookmarks();
@@ -368,7 +362,7 @@ async function setBookmarkMarking(id, enabled) {
   if (enabled) optedOut.delete(id);
   else optedOut.add(id);
   await chrome.storage.local
-    .set({ [OPTOUT_KEY]: [...optedOut] })
+    .set({ [KEYS.optedOut]: [...optedOut] })
     .catch(() => {});
   const [node] = await chrome.bookmarks.get(id).catch(() => []);
   if (node?.url) await syncBookmark(id, node.url);
