@@ -34,6 +34,9 @@ you'd typed but not yet submitted. Nothing is lost.
   for a searchable list of all your bookmarks - click any to open it in a new tab.
 - **Background mode.** Flip one switch in Settings and bookmarks open quietly in background
   tabs so you can line up several at once.
+- **Fine-tune how bookmarks open.** Turn the new-tab behavior on or off for the whole
+  bookmarks bar or per bookmark, keep search engines in the same tab, or reopen a bookmark
+  in the tab you're already on when it points to that same site - all in Settings.
 - **Search & keyboard-friendly.** Type to filter, arrow keys to move, Enter to open.
 - **Light, dark, or system.** Pick a theme in Settings, or let it follow your system.
 - **Built-in settings.** A gear in the popup opens a settings panel - choose your theme,
@@ -56,13 +59,21 @@ to return to your bookmarks). Inside you'll find:
 - **Theme** - **System**, **Light**, or **Dark**. Your choice is remembered.
 - **Open in background** - when on, bookmarks open in a background tab so you stay on your
   current page while queueing up several.
+- **Bookmark bar functionality** - a master switch to turn the new-tab behavior on or off
+  for your whole bookmarks bar.
+- **Per bookmark** - override that master switch for individual bookmarks, so you can keep
+  new-tab on for most and off for a few (or the reverse).
+- **Search engine behavior** - on a search engine (Google, Bing, DuckDuckGo, and more),
+  choose per engine whether bookmarks open in a new tab or the same tab.
+- **Same-site in current tab** - when a bookmark points to the site you're already on, open
+  it in that tab instead of a new one.
 - **Delete extension** - a clean way to back out completely. It restores your bookmarks to
   their original links, clears BookmarkUp's saved settings, and uninstalls the extension.
   It asks you to confirm first, so it can't happen by accident.
 
 ## Install
 
-BookmarkUp is at **v1.1.0**. A public release on the **Chrome Web Store** is on the way - in
+BookmarkUp is at **v1.2.0**. A public release on the **Chrome Web Store** is on the way - in
 the meantime you can install it straight from GitHub:
 
 1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
