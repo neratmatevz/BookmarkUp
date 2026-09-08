@@ -14,7 +14,9 @@
  *      main-frame request to a `newtab@` URL to an endpoint that returns HTTP
  *      204 No Content. Per the HTTP spec a 204 tells the browser to stay on the
  *      current document, so the current tab never navigates — no flash, no
- *      reload.
+ *      reload. The endpoint lives on a neutral host (gstatic.com), never a site
+ *      the user might be viewing: a 204 on the current page's own origin (e.g.
+ *      google.com while on Google) collides with it and breaks the stay-put.
  *   3. This worker sees the navigation attempt (webNavigation.onBeforeNavigate),
  *      strips the marker, and opens the real URL in a new tab.
  *

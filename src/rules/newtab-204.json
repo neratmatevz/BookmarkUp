@@ -4,7 +4,7 @@
     "priority": 1,
     "action": {
       "type": "redirect",
-      "redirect": { "url": "https://www.google.com/generate_204" }
+      "redirect": { "url": "https://www.gstatic.com/generate_204" }
     },
     "condition": {
       "regexFilter": "^https?://newtab@",
