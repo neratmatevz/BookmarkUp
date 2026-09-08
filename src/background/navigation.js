@@ -46,8 +46,14 @@ function isNewTab(tabId) {
 
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   if (details.frameId !== 0) return;
-  if (!hasMarker(details.url)) return;
-  handleMarkedNavigation(details);
+  if (hasMarker(details.url)) {
+    handleMarkedNavigation(details);
+    return;
+  }
+  // Clean URLs (no marker) are normal navigation, so forget any recent tab
+  if (/^https?:/i.test(details.url)) {
+    recentTabs.delete(details.tabId);
+  }
 });
 
 async function handleMarkedNavigation(details) {
