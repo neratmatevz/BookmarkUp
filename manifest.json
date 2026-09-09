@@ -2,10 +2,11 @@
   "manifest_version": 3,
   "name": "BookmarkUp",
   "version": "1.2.1",
-  "description": "Open any bookmark in a new tab with a single left click.",
+  "default_locale": "en",
+  "description": "__MSG_appDesc__",
   "minimum_chrome_version": "116",
   "action": {
-    "default_title": "BookmarkUp - open a bookmark in a new tab",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "src/popup/popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
@@ -47,7 +48,7 @@
         "default": "Ctrl+Shift+U",
         "mac": "Command+Shift+U"
       },
-      "description": "Open BookmarkUp"
+      "description": "__MSG_commandOpen__"
     }
   }
 }
