@@ -22,6 +22,7 @@
   --brand-blue: #0068f6; /* icon blue: toggles + input borders */
   --danger: #cf222e;
   --danger-fg: #ffffff;
+  --surface: #f6f8fa; /* settings card fill, lifted off the white bg */
   /* Divider between settings sections. White on dark; a visible gray on light,
    * where a white line wouldn't show against the white background. */
   --section-line: #aeb4bd;
@@ -44,6 +45,7 @@
   --brand-blue: #2f86ff; /* icon blue (lightened for dark bg) */
   --danger: #f85149;
   --danger-fg: #ffffff;
+  --surface: #22272e; /* settings card fill, lifted off the dark bg */
   --section-line: #ffffff;
 
   color-scheme: dark;
@@ -65,6 +67,7 @@
     --on: #2ea043;
     --danger: #f85149;
     --danger-fg: #ffffff;
+    --surface: #22272e; /* settings card fill, lifted off the dark bg */
     --section-line: #ffffff;
   }
 }

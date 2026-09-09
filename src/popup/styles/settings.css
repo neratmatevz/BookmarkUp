@@ -21,44 +21,55 @@
 .settings-body {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 6px 12px 12px;
+  padding: 12px;
 }
 
-/* Collapsible settings group. The section divider is a solid full-strength
- * line; per-setting dividers inside are lighter (see .setting) so section
- * boundaries read as stronger than the rows within them. */
+/* Each settings section is a rounded card floating on the popup background;
+ * clicking the header toggles the card open. */
 .group {
-  border-bottom: 1px solid var(--section-line);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .group + .group {
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .group-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
-  padding: 10px 2px;
+  padding: 12px;
   border: 0;
-  /* Underline the heading with a soft shadow so the settings below read as
-   * belonging to this section. */
-  border-bottom: 1px solid var(--section-line);
-  box-shadow: 0 3px 5px -3px var(--shadow);
   background: transparent;
   color: inherit;
   font: inherit;
   cursor: pointer;
 }
 
+.group-header:hover {
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+}
+
 .group-header:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
-  border-radius: 6px;
+}
+
+/* Title fills the row; the disclosure arrow sits at the far right. */
+.group-title {
+  order: 1;
+  flex: 1 1 auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
 }
 
 .group-header .twisty {
+  order: 2;
   flex: 0 0 auto;
   width: 12px;
   color: var(--fg-muted);
@@ -69,21 +80,10 @@
   transform: rotate(-90deg);
 }
 
-.group-title {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--fg);
-}
-
-/* An open (active) section's heading dims to grey; collapsed ones stay white. */
-.group-header[aria-expanded="true"] .group-title {
-  color: var(--fg-muted);
-}
-
+/* When open, a divider sets the settings apart from the header. */
 .group-content {
-  padding: 4px 2px 8px;
+  padding: 2px 12px 6px;
+  border-top: 1px solid var(--border);
 }
 
 .group-content[hidden] {

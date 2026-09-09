@@ -32,7 +32,7 @@ function updateMarkingUI(enabled) {
 
   els.markingHint.textContent = enabled
     ? "Left-click a bookmark to open it in a new tab."
-    : "Bookmarks open in the current tab, default behavior.";
+    : "Bookmarks open in the same tab, default behavior.";
 
   // Keep the nested per-bookmark switches in sync with the master.
   refreshPerBookmark();
