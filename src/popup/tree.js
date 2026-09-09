@@ -15,6 +15,7 @@ import {
   debounce,
 } from "./dom.js";
 import { isOpenInBackground } from "./settings/background.js";
+import { t } from "./i18n.js";
 
 /** @type {{ id: string, title: string, url: string }[]} */
 let searchIndex = [];
@@ -49,6 +50,11 @@ export function clearSearch() {
   onSearch();
 }
 
+/** Re-render the current view so translated status/labels follow a language change. */
+export function refreshTree() {
+  onSearch();
+}
+
 /* ------------------------------------------------------------------ *
  * Rendering
  * ------------------------------------------------------------------ */
@@ -61,11 +67,11 @@ function renderTree(roots) {
   const list = buildNodeList(topLevel, 0);
 
   if (!list.childElementCount) {
-    els.tree.append(makeEmpty("No bookmarks yet."));
+    els.tree.append(makeEmpty(t("emptyNoBookmarks")));
   } else {
     els.tree.append(list);
   }
-  setStatus(`${searchIndex.length} bookmarks`);
+  setStatus(t("statusBookmarks", searchIndex.length));
 }
 
 /**
@@ -105,7 +111,7 @@ function buildFolder(node, depth) {
 
   const label = document.createElement("span");
   label.className = "label";
-  label.textContent = node.title || "Untitled folder";
+  label.textContent = node.title || t("untitledFolder");
 
   const count = document.createElement("span");
   count.className = "sub";
@@ -204,8 +210,8 @@ function onSearch() {
 
   els.tree.replaceChildren();
   if (!matches.length) {
-    els.tree.append(makeEmpty("No matches."));
-    setStatus("0 results");
+    els.tree.append(makeEmpty(t("emptyNoMatches")));
+    setStatus(t("statusResultsZero"));
     return;
   }
 
@@ -219,8 +225,10 @@ function onSearch() {
   els.tree.append(ul);
   setStatus(
     matches.length >= MAX_SEARCH_RESULTS
-      ? `${MAX_SEARCH_RESULTS}+ results`
-      : `${matches.length} result${matches.length === 1 ? "" : "s"}`,
+      ? t("statusResultsMax", MAX_SEARCH_RESULTS)
+      : matches.length === 1
+        ? t("statusResultOne", matches.length)
+        : t("statusResultOther", matches.length),
   );
 }
 
@@ -230,7 +238,7 @@ function onSearch() {
 
 function openBookmark(rawUrl) {
   if (!isSafeUrl(rawUrl)) {
-    setStatus("Blocked an unsupported link.");
+    setStatus(t("blockedUrl"));
     return;
   }
   chrome.tabs

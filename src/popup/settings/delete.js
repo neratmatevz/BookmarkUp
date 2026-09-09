@@ -7,6 +7,7 @@
 
 import { MSG } from "../../shared/constants.js";
 import { els, setSettingsStatus } from "../dom.js";
+import { t } from "../i18n.js";
 
 let armed = false;
 
@@ -22,7 +23,7 @@ export function resetDelete() {
   els.deleteData.classList.remove("armed");
   els.deleteCancel.hidden = true;
   els.deleteConfirm.hidden = true;
-  els.deleteData.textContent = "Delete extension";
+  els.deleteData.textContent = t("deleteButton");
   setSettingsStatus("");
 }
 
@@ -32,7 +33,7 @@ async function onDeleteData() {
   if (!armed) {
     armed = true;
     els.deleteData.classList.add("armed");
-    els.deleteData.textContent = "Yes, delete extension";
+    els.deleteData.textContent = t("deleteArmed");
     els.deleteCancel.hidden = false;
     els.deleteConfirm.hidden = false;
     return;
@@ -41,8 +42,8 @@ async function onDeleteData() {
   els.deleteData.disabled = true;
   els.deleteCancel.hidden = true;
   els.deleteConfirm.hidden = true;
-  els.deleteData.textContent = "Removing…";
-  setSettingsStatus("Restoring bookmarks and clearing data…");
+  els.deleteData.textContent = t("deleteRemoving");
+  setSettingsStatus(t("deleteRestoring"));
 
   try {
     // Restore original bookmark URLs and clear stored settings first — once the
@@ -61,6 +62,6 @@ async function onDeleteData() {
     chrome.runtime.sendMessage({ type: MSG.resumeMarking }).catch(() => {});
     console.error("BookmarkUp:", err);
     resetDelete();
-    setSettingsStatus(`Couldn't remove the extension: ${err.message}`);
+    setSettingsStatus(t("deleteFailed", err.message));
   }
 }

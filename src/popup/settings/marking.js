@@ -9,6 +9,7 @@ import { KEYS, MSG } from "../../shared/constants.js";
 import { els } from "../dom.js";
 import { marking } from "./marking-state.js";
 import { refreshPerBookmark } from "./per-bookmark.js";
+import { t } from "../i18n.js";
 
 export async function initMarking() {
   const [enabled, optedOut] = await Promise.all([loadEnabled(), loadOptedOut()]);
@@ -22,20 +23,23 @@ function updateMarkingUI(enabled) {
   marking.enabled = enabled;
 
   // Button label is the action; colour it to match (blue = turn on, red = off).
-  els.markingToggle.textContent = enabled ? "Turn OFF" : "Turn ON";
+  els.markingToggle.textContent = enabled ? t("markingTurnOff") : t("markingTurnOn");
   els.markingToggle.classList.toggle("btn-red", enabled);
   els.markingToggle.classList.toggle("btn-blue", !enabled);
 
   // Coloured ON/OFF word sits in the setting's heading.
-  els.markingState.textContent = enabled ? "ON" : "OFF";
+  els.markingState.textContent = enabled ? t("markingStateOn") : t("markingStateOff");
   els.markingState.className = enabled ? "state-on" : "state-off";
 
-  els.markingHint.textContent = enabled
-    ? "Left-click a bookmark to open it in a new tab."
-    : "Bookmarks open in the same tab, default behavior.";
+  els.markingHint.textContent = enabled ? t("markingHintOn") : t("markingHintOff");
 
   // Keep the nested per-bookmark switches in sync with the master.
   refreshPerBookmark();
+}
+
+/** Re-apply the marking labels in the current language (for a language change). */
+export function refreshMarkingUI() {
+  updateMarkingUI(marking.enabled);
 }
 
 /**
