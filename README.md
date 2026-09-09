@@ -73,7 +73,7 @@ to return to your bookmarks). Inside you'll find:
 
 ## Install
 
-BookmarkUp is at **v1.2.0**. A public release on the **Chrome Web Store** is on the way - in
+BookmarkUp is at **v1.2.1**. A public release on the **Chrome Web Store** is on the way - in
 the meantime you can install it straight from GitHub:
 
 1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
