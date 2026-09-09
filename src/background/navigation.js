@@ -69,13 +69,51 @@ async function handleMarkedNavigation(details) {
   // Left-click in an existing tab: the 204 redirect keeps that tab put, so we
   // normally open the real page in a new tab. But same-site behavior or a
   // search engine set to same-tab can send it to the current tab instead.
+  // Start watching for the marker navigation to end BEFORE the async check below
+  // so we don't miss it (only needed when a same-tab open is possible).
+  const maybeSameTab = state.sameSite || state.sameTabEngines.size > 0;
+  const markerNavEnded = maybeSameTab
+    ? currentNavigationEnded(details.tabId)
+    : null;
+
   if (await shouldOpenInCurrentTab(details.tabId, cleanUrl)) {
+    // Wait for the marker navigation (redirecting to the 204) to finish aborting
+    // before navigating. If we navigate while it is still pending, Chrome treats
+    // our navigation as a redirect of it and REPLACES the current page's history
+    // entry instead of pushing a new one, so Back would skip the page the user
+    // was on. Letting it settle first makes this a clean new history entry.
+    await markerNavEnded;
     chrome.tabs.update(details.tabId, { url: cleanUrl }).catch(logError);
   } else {
     chrome.tabs
       .create({ url: cleanUrl, active: !state.openInBackground })
       .catch(logError);
   }
+}
+
+/**
+ * Resolve once the in-flight main-frame navigation in `tabId` ends. The marker
+ * navigation aborts on the 204, which fires onErrorOccurred; a fallback timeout
+ * keeps this from hanging if no event arrives.
+ */
+function currentNavigationEnded(tabId) {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      chrome.webNavigation.onErrorOccurred.removeListener(onEnd);
+      chrome.webNavigation.onCompleted.removeListener(onEnd);
+      clearTimeout(timer);
+      resolve();
+    };
+    const onEnd = (d) => {
+      if (d.tabId === tabId && d.frameId === 0) finish();
+    };
+    chrome.webNavigation.onErrorOccurred.addListener(onEnd);
+    chrome.webNavigation.onCompleted.addListener(onEnd);
+    const timer = setTimeout(finish, 400);
+  });
 }
 
 /**
