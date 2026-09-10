@@ -20,6 +20,7 @@
         class="icon-btn"
         aria-label="Settings"
         title="Settings"
+        data-i18n-attr="aria-label:settings,title:settings"
       >
         <span aria-hidden="true">⚙</span>
       </button>
@@ -35,16 +36,29 @@
           autocomplete="off"
           spellcheck="false"
           aria-label="Search bookmarks"
+          data-i18n-attr="placeholder:searchPlaceholder,aria-label:searchLabel"
         />
       </div>
 
-      <main id="tree" class="tree" tabindex="-1" aria-label="Bookmarks"></main>
+      <main
+        id="tree"
+        class="tree"
+        tabindex="-1"
+        aria-label="Bookmarks"
+        data-i18n-attr="aria-label:bookmarks"
+      ></main>
 
       <p id="status" class="status" role="status" aria-live="polite"></p>
     </section>
 
     <!-- Settings view -->
-    <section id="view-settings" class="view settings" hidden aria-label="Settings">
+    <section
+      id="view-settings"
+      class="view settings"
+      hidden
+      aria-label="Settings"
+      data-i18n-attr="aria-label:settings"
+    >
       <div class="settings-head">
         <button
           type="button"
@@ -52,10 +66,11 @@
           class="icon-btn"
           aria-label="Back to bookmarks"
           title="Back"
+          data-i18n-attr="aria-label:backLabel,title:backTitle"
         >
           <span aria-hidden="true">←</span>
         </button>
-        <h2>Settings</h2>
+        <h2 data-i18n="settings">Settings</h2>
       </div>
 
       <div class="settings-body">
@@ -67,15 +82,33 @@
             aria-controls="group-general"
           >
             <span class="twisty" aria-hidden="true">▾</span>
-            <span class="group-title">General</span>
+            <span class="group-title" data-i18n="groupGeneral">General</span>
           </button>
           <div class="group-content" id="group-general">
             <div class="setting">
-              <label for="theme-select">Theme</label>
+              <label for="theme-select" data-i18n="themeLabel">Theme</label>
               <select id="theme-select" class="select">
-                <option value="system">System</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
+                <option value="system" data-i18n="themeSystem">System</option>
+                <option value="light" data-i18n="themeLight">Light</option>
+                <option value="dark" data-i18n="themeDark">Dark</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="language-select" data-i18n="languageLabel">Language</label>
+              <select id="language-select" class="select">
+                <option value="system" data-i18n="languageSystem">System</option>
+                <option value="en" data-i18n="languageEnglish">English</option>
+                <option value="sl" data-i18n="languageSlovenian">Slovenščina</option>
+                <option value="de" data-i18n="languageGerman">Deutsch</option>
+                <option value="fr" data-i18n="languageFrench">Français</option>
+                <option value="es" data-i18n="languageSpanish">Español</option>
+                <option value="hr" data-i18n="languageCroatian">Hrvatski</option>
+                <option value="bs" data-i18n="languageBosnian">Bosanski</option>
+                <option value="sr" data-i18n="languageSerbian">Српски</option>
+                <option value="ru" data-i18n="languageRussian">Русский</option>
+                <option value="hi" data-i18n="languageHindi">हिन्दी</option>
+                <option value="ar" data-i18n="languageArabic">العربية</option>
+                <option value="zh" data-i18n="languageChinese">简体中文</option>
               </select>
             </div>
           </div>
@@ -89,13 +122,13 @@
             aria-controls="group-behavior"
           >
             <span class="twisty" aria-hidden="true">▾</span>
-            <span class="group-title">Behavior</span>
+            <span class="group-title" data-i18n="groupBehavior">Behavior</span>
           </button>
           <div class="group-content" id="group-behavior" hidden>
             <div class="setting">
               <label for="background-toggle">
-                Open in background
-                <span class="hint">Bookmarks open without closing the extension popup</span>
+                <span data-i18n="backgroundLabel">Open in background</span>
+                <span class="hint" data-i18n="backgroundHint">Bookmarks open without closing the extension popup</span>
               </label>
               <label class="switch">
                 <input type="checkbox" id="background-toggle" />
@@ -105,7 +138,7 @@
 
             <div class="setting no-divider">
               <label>
-                Bookmark bar functionality <span id="marking-state"></span>
+                <span data-i18n="markingLabel">Bookmark bar functionality</span> <span id="marking-state"></span>
                 <span class="hint" id="marking-hint"></span>
               </label>
               <button type="button" id="marking-toggle" class="btn"></button>
@@ -121,8 +154,8 @@
               >
                 <span class="twisty" aria-hidden="true">▾</span>
                 <span class="disclosure-text">
-                  <span class="disclosure-label">Per bookmark</span>
-                  <span class="hint">Override the switch above for individual bookmarks</span>
+                  <span class="disclosure-label" data-i18n="perBookmarkLabel">Per bookmark</span>
+                  <span class="hint" data-i18n="perBookmarkHint">Override the switch above for individual bookmarks</span>
                 </span>
               </button>
               <div id="perbookmark-panel" class="perbookmark-panel" hidden></div>
@@ -137,10 +170,10 @@
                 aria-controls="searchengine-panel"
               >
                 <span class="disclosure-text">
-                  <span class="disclosure-label">Search engine behavior</span>
+                  <span class="disclosure-label" data-i18n="searchEngineLabel">Search engine behavior</span>
                   <span class="disclosure-hintrow">
                     <span class="twisty" aria-hidden="true">▾</span>
-                    <span class="hint">On a search engine, on = new tab, off = same tab</span>
+                    <span class="hint" data-i18n="searchEngineHint">On a search engine, on = new tab, off = same tab</span>
                   </span>
                 </span>
               </button>
@@ -149,8 +182,8 @@
 
             <div class="setting">
               <label for="samesite-toggle">
-                Same-site in current tab
-                <span class="hint">When a bookmark points to the site you're already on, open it in same tab</span>
+                <span data-i18n="sameSiteLabel">Same-site in current tab</span>
+                <span class="hint" data-i18n="sameSiteHint">When a bookmark points to the site you're already on, open it in same tab</span>
               </label>
               <label class="switch">
                 <input type="checkbox" id="samesite-toggle" />
@@ -162,7 +195,7 @@
       </div>
 
       <footer class="settings-footer">
-        <p id="delete-confirm" class="delete-confirm" hidden>
+        <p id="delete-confirm" class="delete-confirm" hidden data-i18n="deleteConfirm">
           Are you sure? This restores your bookmarks and removes BookmarkUp -
           it can't be undone.
         </p>
@@ -174,10 +207,11 @@
             hidden
             aria-label="Keep the extension"
             title="Keep the extension"
+            data-i18n-attr="aria-label:keepLabel,title:keepLabel"
           >
             <span aria-hidden="true">←</span>
           </button>
-          <button type="button" id="delete-data" class="btn btn-delete">
+          <button type="button" id="delete-data" class="btn btn-delete" data-i18n="deleteButton">
             Delete extension
           </button>
         </div>

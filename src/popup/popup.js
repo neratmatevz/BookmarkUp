@@ -8,19 +8,24 @@
  * for the shared element references and view helpers.
  */
 
+import { KEYS } from "../shared/constants.js";
 import { els, setSettingsStatus } from "./dom.js";
-import { initTree, clearSearch } from "./tree.js";
+import { setLanguage, applyStatic, dir } from "./i18n.js";
+import { initTree, clearSearch, refreshTree } from "./tree.js";
 import { initTheme } from "./settings/theme.js";
 import { initBackground } from "./settings/background.js";
-import { initMarking } from "./settings/marking.js";
-import { initPerBookmark } from "./settings/per-bookmark.js";
-import { initSearchEngines } from "./settings/search-engines.js";
+import { initMarking, refreshMarkingUI } from "./settings/marking.js";
+import { initPerBookmark, refreshPerBookmark } from "./settings/per-bookmark.js";
+import { initSearchEngines, refreshSearchEngines } from "./settings/search-engines.js";
 import { initSameSite } from "./settings/same-site.js";
 import { initDelete, resetDelete } from "./settings/delete.js";
 
 init();
 
 async function init() {
+  // Resolve the language and fill static UI text before anything renders.
+  await initI18n();
+
   // Load persisted settings up front so the settings UI opens in the right state.
   await Promise.all([
     initTheme(),
@@ -40,6 +45,34 @@ async function init() {
   document.addEventListener("keydown", onGlobalKeydown);
 
   await initTree();
+}
+
+async function initI18n() {
+  let pref = "system";
+  try {
+    const stored = await chrome.storage.local.get(KEYS.language);
+    if (stored[KEYS.language]) pref = stored[KEYS.language];
+  } catch {
+    /* no stored preference: fall back to system */
+  }
+  await setLanguage(pref);
+  applyStatic();
+  document.documentElement.dir = dir();
+  els.languageSelect.value = pref;
+  els.languageSelect.addEventListener("change", onLanguageChange);
+}
+
+async function onLanguageChange() {
+  const pref = els.languageSelect.value; // "system" | "en" | "sl"
+  chrome.storage.local.set({ [KEYS.language]: pref }).catch(() => {});
+  await setLanguage(pref);
+  document.documentElement.dir = dir();
+  // Re-render everything that carries text: static labels, then the dynamic bits.
+  applyStatic();
+  refreshMarkingUI();
+  refreshPerBookmark();
+  refreshSearchEngines();
+  refreshTree();
 }
 
 function showSettings(on) {

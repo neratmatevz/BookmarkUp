@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "只需单击左键即可在新标签页中打开任意书签。"
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - 在新标签页中打开书签"
+  },
+  "commandOpen": {
+    "message": "打开 BookmarkUp"
+  }
+}

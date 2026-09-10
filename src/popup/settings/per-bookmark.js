@@ -9,6 +9,7 @@ import { MSG } from "../../shared/constants.js";
 import { els, faviconUrl } from "../dom.js";
 import { getSearchIndex } from "../tree.js";
 import { marking } from "./marking-state.js";
+import { t } from "../i18n.js";
 
 let rendered = false;
 
@@ -41,7 +42,7 @@ function render() {
   if (!items.length) {
     const empty = document.createElement("p");
     empty.className = "pb-empty";
-    empty.textContent = "No web bookmarks to configure.";
+    empty.textContent = t("perBookmarkEmpty");
     els.perBookmarkPanel.append(empty);
     return;
   }
@@ -82,7 +83,7 @@ function makeItem(entry) {
   // where per-bookmark choices don't apply.
   input.checked = marking.enabled && !marking.optedOut.has(entry.id);
   input.disabled = !marking.enabled;
-  input.setAttribute("aria-label", `New-tab behavior for ${entry.title || entry.url}`);
+  input.setAttribute("aria-label", t("perBookmarkItemAria", entry.title || entry.url));
   input.addEventListener("change", () => onItemToggle(entry.id, input));
   const track = document.createElement("span");
   track.className = "switch-track";

@@ -13,6 +13,7 @@ export const KEYS = {
   sameTabEngines: "sameTabEngines",
   sameSite: "sameSite",
   theme: "theme",
+  language: "language",
 };
 
 /** chrome.runtime.sendMessage `type` values (popup -> service worker). */

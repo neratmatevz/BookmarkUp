@@ -4,6 +4,8 @@
  * Module scripts run after the document is parsed, so getElementById is safe here.
  */
 
+import { t } from "./i18n.js";
+
 export const els = {
   tree: document.getElementById("tree"),
   search: document.getElementById("search-input"),
@@ -16,6 +18,7 @@ export const els = {
   settingsBack: document.getElementById("settings-back"),
   settingsStatus: document.getElementById("settings-status"),
   themeSelect: document.getElementById("theme-select"),
+  languageSelect: document.getElementById("language-select"),
   markingToggle: document.getElementById("marking-toggle"),
   markingState: document.getElementById("marking-state"),
   markingHint: document.getElementById("marking-hint"),
@@ -57,7 +60,7 @@ export function setSettingsStatus(text) {
 
 export function showError(err) {
   console.error("BookmarkUp:", err);
-  setStatus("Something went wrong loading bookmarks.");
+  setStatus(t("loadError"));
 }
 
 export function debounce(fn, ms) {

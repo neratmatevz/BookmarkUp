@@ -1,0 +1,14 @@
+{
+  "appDesc": {
+    "message": "Open any bookmark in a new tab with a single left click.",
+    "description": "Extension description shown on the extensions page and store listing."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - open a bookmark in a new tab",
+    "description": "Toolbar button tooltip."
+  },
+  "commandOpen": {
+    "message": "Open BookmarkUp",
+    "description": "Label for the keyboard shortcut that opens the popup."
+  }
+}

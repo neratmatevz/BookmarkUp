@@ -7,6 +7,7 @@
 import { SEARCH_ENGINES } from "../../shared/search-engines.js";
 import { KEYS, MSG } from "../../shared/constants.js";
 import { els } from "../dom.js";
+import { t } from "../i18n.js";
 
 /** Engine ids set to open bookmarks in the same tab (mirrors the SW). */
 let sameTabEngines = new Set();
@@ -15,6 +16,11 @@ let rendered = false;
 export async function initSearchEngines() {
   sameTabEngines = await load();
   els.searchEngineToggle.addEventListener("click", onToggle);
+}
+
+/** Re-render the engine list if it has been built (for a language change). */
+export function refreshSearchEngines() {
+  if (rendered) render();
 }
 
 /** Show/hide the search-engine panel; build its list lazily on first open. */
@@ -65,7 +71,7 @@ function makeRow(engine) {
   const input = document.createElement("input");
   input.type = "checkbox";
   input.checked = !sameTabEngines.has(engine.id); // on = new tab (default)
-  input.setAttribute("aria-label", `Open bookmarks in a new tab on ${engine.label}`);
+  input.setAttribute("aria-label", t("engineItemAria", engine.label));
   input.addEventListener("change", () => onEngineToggle(engine.id, input));
   const track = document.createElement("span");
   track.className = "switch-track";

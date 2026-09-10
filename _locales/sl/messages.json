@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Odprite kateri koli zaznamek v novem zavihku z enim levim klikom."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - odpri zaznamek v novem zavihku"
+  },
+  "commandOpen": {
+    "message": "Odpri BookmarkUp"
+  }
+}

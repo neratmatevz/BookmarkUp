@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Ouvrez n'importe quel favori dans un nouvel onglet d'un simple clic gauche."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - ouvrir un favori dans un nouvel onglet"
+  },
+  "commandOpen": {
+    "message": "Ouvrir BookmarkUp"
+  }
+}

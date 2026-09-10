@@ -37,8 +37,8 @@ ul.node-list {
 
 /* Nested lists indent one step per level. */
 ul.node-list ul.node-list {
-  margin-left: 16px;
-  border-left: 1px solid var(--border);
+  margin-inline-start: 16px;
+  border-inline-start: 1px solid var(--border);
 }
 
 .row {

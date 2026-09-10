@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Otvorite bilo koju oznaku u novoj kartici jednim lijevim klikom."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - otvori oznaku u novoj kartici"
+  },
+  "commandOpen": {
+    "message": "Otvori BookmarkUp"
+  }
+}
