@@ -57,6 +57,8 @@ Open the popup and click the **⚙ gear** in the top corner (press **Esc** or th
 to return to your bookmarks). Inside you'll find:
 
 - **Theme** - **System**, **Light**, or **Dark**. Your choice is remembered.
+- **Language** - **System** (follows your browser) plus English, Slovenian, German, French,
+  Spanish, Croatian, Bosnian, Serbian, Russian, Hindi, Arabic, and Chinese.
 - **Open in background** - when on, bookmarks open in a background tab so you stay on your
   current page while queueing up several.
 - **Bookmark bar functionality** - a master switch to turn the new-tab behavior on or off
@@ -73,7 +75,7 @@ to return to your bookmarks). Inside you'll find:
 
 ## Install
 
-BookmarkUp is at **v1.2.1**. A public release on the **Chrome Web Store** is on the way - in
+BookmarkUp is at **v1.3.0**. A public release on the **Chrome Web Store** is on the way - in
 the meantime you can install it straight from GitHub:
 
 1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
