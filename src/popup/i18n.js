@@ -13,12 +13,26 @@
 
 import en from "./locales/en.js";
 import sl from "./locales/sl.js";
+import de from "./locales/de.js";
+import fr from "./locales/fr.js";
+import es from "./locales/es.js";
+import hr from "./locales/hr.js";
+import sr from "./locales/sr.js";
+import bs from "./locales/bs.js";
+import ru from "./locales/ru.js";
+import hi from "./locales/hi.js";
+import ar from "./locales/ar.js";
+import zh from "./locales/zh.js";
 
-const DICTS = { en, sl };
-const SUPPORTED = ["en", "sl"];
+const DICTS = { en, sl, de, fr, es, hr, sr, bs, ru, hi, ar, zh };
+const SUPPORTED = ["en", "sl", "de", "fr", "es", "hr", "sr", "bs", "ru", "hi", "ar", "zh"];
 const FALLBACK = "en";
 
+// Right-to-left languages: the popup flips to dir="rtl" for these.
+const RTL = new Set(["ar"]);
+
 let active = en;
+let activeCode = FALLBACK;
 
 /**
  * Resolve the "system" preference to a supported language via the user's
@@ -42,8 +56,14 @@ async function resolveSystem() {
  * @param {"system"|"en"|"sl"} pref
  */
 export async function setLanguage(pref) {
-  const lang = pref === "en" || pref === "sl" ? pref : await resolveSystem();
-  active = DICTS[lang] || DICTS[FALLBACK];
+  const lang = SUPPORTED.includes(pref) ? pref : await resolveSystem();
+  activeCode = DICTS[lang] ? lang : FALLBACK;
+  active = DICTS[activeCode];
+}
+
+/** Text direction of the active language, for document.documentElement.dir. */
+export function dir() {
+  return RTL.has(activeCode) ? "rtl" : "ltr";
 }
 
 /**

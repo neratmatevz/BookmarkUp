@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Открывайте любую закладку в новой вкладке одним левым щелчком."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - открыть закладку в новой вкладке"
+  },
+  "commandOpen": {
+    "message": "Открыть BookmarkUp"
+  }
+}

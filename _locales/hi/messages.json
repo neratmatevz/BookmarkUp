@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "किसी भी बुकमार्क को एक ही बाएँ-क्लिक से नए टैब में खोलें।"
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - बुकमार्क को नए टैब में खोलें"
+  },
+  "commandOpen": {
+    "message": "BookmarkUp खोलें"
+  }
+}

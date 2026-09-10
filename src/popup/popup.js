@@ -10,7 +10,7 @@
 
 import { KEYS } from "../shared/constants.js";
 import { els, setSettingsStatus } from "./dom.js";
-import { setLanguage, applyStatic } from "./i18n.js";
+import { setLanguage, applyStatic, dir } from "./i18n.js";
 import { initTree, clearSearch, refreshTree } from "./tree.js";
 import { initTheme } from "./settings/theme.js";
 import { initBackground } from "./settings/background.js";
@@ -57,6 +57,7 @@ async function initI18n() {
   }
   await setLanguage(pref);
   applyStatic();
+  document.documentElement.dir = dir();
   els.languageSelect.value = pref;
   els.languageSelect.addEventListener("change", onLanguageChange);
 }
@@ -65,6 +66,7 @@ async function onLanguageChange() {
   const pref = els.languageSelect.value; // "system" | "en" | "sl"
   chrome.storage.local.set({ [KEYS.language]: pref }).catch(() => {});
   await setLanguage(pref);
+  document.documentElement.dir = dir();
   // Re-render everything that carries text: static labels, then the dynamic bits.
   applyStatic();
   refreshMarkingUI();

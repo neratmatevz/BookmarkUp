@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Отворите било који обележивач у новој картици једним левим кликом."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - отвори обележивач у новој картици"
+  },
+  "commandOpen": {
+    "message": "Отвори BookmarkUp"
+  }
+}

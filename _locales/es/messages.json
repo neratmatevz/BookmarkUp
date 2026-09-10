@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Abre cualquier marcador en una pestaña nueva con un solo clic izquierdo."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - abrir un marcador en una pestaña nueva"
+  },
+  "commandOpen": {
+    "message": "Abrir BookmarkUp"
+  }
+}

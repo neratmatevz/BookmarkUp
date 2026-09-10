@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "Öffne jedes Lesezeichen mit einem einzigen Linksklick in einem neuen Tab."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - ein Lesezeichen in einem neuen Tab öffnen"
+  },
+  "commandOpen": {
+    "message": "BookmarkUp öffnen"
+  }
+}

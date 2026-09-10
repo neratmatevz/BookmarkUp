@@ -132,9 +132,9 @@
 /* Nested under the Bookmark bar functionality switch: indent with a left rail
  * and a subtle divider below to close the grouped block. */
 .disclosure-wrap.nested {
-  margin-left: 6px;
-  padding-left: 10px;
-  border-left: 2px solid color-mix(in srgb, var(--border) 70%, transparent);
+  margin-inline-start: 6px;
+  padding-inline-start: 10px;
+  border-inline-start: 2px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
 }
 
@@ -217,9 +217,11 @@
 }
 
 .perbookmark-panel {
-  /* Left padding aligns the grid with the "Per bookmark" label (past the
-   * 12px twisty + 6px gap in the disclosure header). */
-  padding: 2px 0 8px 18px;
+  /* Inline-start padding aligns the grid with the "Per bookmark" label (past
+   * the 12px twisty + 6px gap in the disclosure header). Logical so it mirrors
+   * in RTL. */
+  padding: 2px 0 8px;
+  padding-inline-start: 18px;
 }
 
 /* Two bookmarks per row so the list stays compact. */

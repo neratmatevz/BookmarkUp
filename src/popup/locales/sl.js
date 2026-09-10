@@ -27,6 +27,16 @@ export default {
   languageSystem: "Sistemski",
   languageEnglish: "English",
   languageSlovenian: "Slovenščina",
+  languageGerman: "Deutsch",
+  languageFrench: "Français",
+  languageSpanish: "Español",
+  languageCroatian: "Hrvatski",
+  languageBosnian: "Bosanski",
+  languageSerbian: "Српски",
+  languageRussian: "Русский",
+  languageHindi: "हिन्दी",
+  languageArabic: "العربية",
+  languageChinese: "简体中文",
 
   // Behavior
   groupBehavior: "Nastavitve delovanja",

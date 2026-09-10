@@ -1,0 +1,11 @@
+{
+  "appDesc": {
+    "message": "افتح أي إشارة مرجعية في علامة تبويب جديدة بنقرة يسرى واحدة."
+  },
+  "actionTitle": {
+    "message": "BookmarkUp - فتح إشارة مرجعية في علامة تبويب جديدة"
+  },
+  "commandOpen": {
+    "message": "فتح BookmarkUp"
+  }
+}
