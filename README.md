@@ -125,6 +125,12 @@ started, and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). To report 
 issue, see [SECURITY.md](SECURITY.md). Questions and ideas belong in
 [Discussions](https://github.com/neratmatevz/BookmarkUp/discussions).
 
+## Support
+
+If BookmarkUp saves you a few clicks.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L4O426TJKI)
+
 ## License
 
 BookmarkUp is released under the [MIT License](LICENSE) - free to use, modify, and share.
