@@ -51,6 +51,8 @@ you'd typed but not yet submitted. Nothing is lost.
 - **Built-in settings.** A gear in the popup opens a settings panel - choose your theme,
   toggle background mode, and, if you ever want to, cleanly remove the extension in one
   step (it restores your bookmarks first).
+- **About panel.** An info button in the popup shows the version and quick links to the
+  website, source code, and support - all in one place.
 
 ## How to use it
 
@@ -84,7 +86,7 @@ to return to your bookmarks). Inside you'll find:
 
 ## Install
 
-BookmarkUp is at **v1.3.0**. A public release on the **Chrome Web Store** is on the way - in
+BookmarkUp is at **v1.4.0**. A public release on the **Chrome Web Store** is on the way - in
 the meantime you can install it straight from GitHub:
 
 1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
