@@ -78,4 +78,13 @@ export default {
   untitledFolder: "Carpeta sin título",
   blockedUrl: "Se bloqueó un enlace no compatible.",
   loadError: "Se produjo un error al cargar los marcadores.",
+  // About
+  about: "Acerca de",
+  aboutTitle: "Acerca de la extensión",
+  aboutVersion: "Versión $1",
+  aboutTagline: "Abre cualquier marcador en una pestaña nueva con un solo clic izquierdo.",
+  aboutWebsite: "Sitio web",
+  aboutSource: "Código fuente",
+  aboutSupport: "Apóyanos (Ko-fi)",
+  aboutLicense: "Publicado bajo la licencia MIT.",
 };

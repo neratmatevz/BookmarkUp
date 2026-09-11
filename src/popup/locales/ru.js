@@ -77,4 +77,13 @@ export default {
   untitledFolder: "Папка без названия",
   blockedUrl: "Неподдерживаемая ссылка заблокирована.",
   loadError: "Произошла ошибка при загрузке закладок.",
+  // About
+  about: "О расширении",
+  aboutTitle: "О расширении",
+  aboutVersion: "Версия $1",
+  aboutTagline: "Открывайте любую закладку в новой вкладке одним левым кликом.",
+  aboutWebsite: "Веб-сайт",
+  aboutSource: "Исходный код",
+  aboutSupport: "Поддержать (Ko-fi)",
+  aboutLicense: "Распространяется по лицензии MIT.",
 };

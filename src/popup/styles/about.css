@@ -1,0 +1,92 @@
+/* About view: app identity, external links, license note. Reuses .settings-head
+ * and .icon-btn from base/settings; this file styles only the About body. */
+
+.about-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 16px 16px;
+}
+
+/* Icon + name + version + tagline, centered. */
+.about-identity {
+  text-align: center;
+}
+
+.about-logo {
+  display: block;
+  margin: 0 auto 10px;
+  border-radius: 14px;
+}
+
+.about-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.about-version {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.about-tagline {
+  margin: 10px auto 0;
+  max-width: 30ch;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/* External links: a single centered row of icon-only buttons. */
+.about-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.about-link:hover {
+  background: color-mix(in srgb, var(--fg) 5%, var(--surface));
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, var(--border));
+}
+
+.about-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.about-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* The GitHub mark is an SVG that inherits the link colour. */
+svg.about-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+/* Pinned to the bottom of the view. */
+.about-license {
+  margin: auto 0 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--fg-muted);
+}

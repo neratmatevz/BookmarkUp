@@ -82,4 +82,13 @@ export default {
   untitledFolder: "Neimenovana mapa",
   blockedUrl: "Nepodprta povezava je blokirana.",
   loadError: "Pri nalaganju zaznamkov je prišlo do napake.",
+  // About
+  about: "O razširitvi",
+  aboutTitle: "O razširitvi",
+  aboutVersion: "Različica $1",
+  aboutTagline: "Odprite kateri koli zaznamek v novem zavihku z enim levim klikom.",
+  aboutWebsite: "Spletna stran",
+  aboutSource: "Izvorna koda",
+  aboutSupport: "Podprite nas (Ko-fi)",
+  aboutLicense: "Izdano pod licenco MIT.",
 };

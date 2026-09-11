@@ -78,4 +78,13 @@ export default {
   untitledFolder: "مجلد بدون عنوان",
   blockedUrl: "تم حظر رابط غير مدعوم.",
   loadError: "حدث خطأ أثناء تحميل الإشارات المرجعية.",
+  // About
+  about: "حول",
+  aboutTitle: "حول الامتداد",
+  aboutVersion: "الإصدار $1",
+  aboutTagline: "افتح أي إشارة مرجعية في علامة تبويب جديدة بنقرة يسار واحدة.",
+  aboutWebsite: "الموقع الإلكتروني",
+  aboutSource: "الكود المصدري",
+  aboutSupport: "ادعمنا (Ko-fi)",
+  aboutLicense: "منشور بموجب رخصة MIT.",
 };

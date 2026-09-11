@@ -77,4 +77,13 @@ export default {
   untitledFolder: "Unbenannter Ordner",
   blockedUrl: "Ein nicht unterstützter Link wurde blockiert.",
   loadError: "Beim Laden der Lesezeichen ist ein Fehler aufgetreten.",
+  // About
+  about: "Über",
+  aboutTitle: "Über die Erweiterung",
+  aboutVersion: "Version $1",
+  aboutTagline: "Öffnen Sie jedes Lesezeichen mit einem einzigen Linksklick in einem neuen Tab.",
+  aboutWebsite: "Webseite",
+  aboutSource: "Quellcode",
+  aboutSupport: "Unterstützen (Ko-fi)",
+  aboutLicense: "Veröffentlicht unter der MIT-Lizenz.",
 };

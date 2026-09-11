@@ -80,4 +80,13 @@ export default {
   untitledFolder: "Неименована фасцикла",
   blockedUrl: "Неподржана веза је блокирана.",
   loadError: "Дошло је до грешке при учитавању обележивача.",
+  // About
+  about: "О проширењу",
+  aboutTitle: "О проширењу",
+  aboutVersion: "Верзија $1",
+  aboutTagline: "Отворите било који обележивач у новој картици једним левим кликом.",
+  aboutWebsite: "Веб-сајт",
+  aboutSource: "Изворни код",
+  aboutSupport: "Подржите нас (Ko-fi)",
+  aboutLicense: "Објављено под MIT лиценцом.",
 };

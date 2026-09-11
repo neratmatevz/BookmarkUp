@@ -78,4 +78,13 @@ export default {
   untitledFolder: "Neimenovani folder",
   blockedUrl: "Nepodržani link je blokiran.",
   loadError: "Došlo je do greške pri učitavanju zabilješki.",
+  // About
+  about: "O proširenju",
+  aboutTitle: "O proširenju",
+  aboutVersion: "Verzija $1",
+  aboutTagline: "Otvorite bilo koju zabilješku u novoj kartici jednim lijevim klikom.",
+  aboutWebsite: "Web stranica",
+  aboutSource: "Izvorni kôd",
+  aboutSupport: "Podržite nas (Ko-fi)",
+  aboutLicense: "Objavljeno pod MIT licencom.",
 };
