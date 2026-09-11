@@ -8,6 +8,13 @@
 
 Built for laptops and touchpads, where middle-click and Ctrl+click are awkward.
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=neratmatevz_BookmarkUp)](https://sonarcloud.io/summary/new_code?id=neratmatevz_BookmarkUp)
+[![Latest release](https://img.shields.io/github/v/release/neratmatevz/BookmarkUp?sort=semver)](https://github.com/neratmatevz/BookmarkUp/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285F4)
+![Chromium](https://img.shields.io/badge/Chromium-116%2B-FB542B)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 </div>
 
 ---
@@ -39,6 +46,8 @@ you'd typed but not yet submitted. Nothing is lost.
   in the tab you're already on when it points to that same site - all in Settings.
 - **Search & keyboard-friendly.** Type to filter, arrow keys to move, Enter to open.
 - **Light, dark, or system.** Pick a theme in Settings, or let it follow your system.
+- **Speaks your language.** Available in 12 languages with a picker in Settings, and
+  follows your browser by default (right-to-left layout included, for Arabic).
 - **Built-in settings.** A gear in the popup opens a settings panel - choose your theme,
   toggle background mode, and, if you ever want to, cleanly remove the extension in one
   step (it restores your bookmarks first).
@@ -108,6 +117,19 @@ To recognise which clicks are yours to handle, BookmarkUp adds a small, invisibl
 your bookmark links. This keeps each bookmark pointing at the same website, so everything
 keeps working normally - and it's fully reversible: **Delete extension** in Settings strips
 the tags and restores your original bookmarks before it removes itself.
+
+## Contributing
+
+Contributions and translations are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) to get
+started, and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). To report a security
+issue, see [SECURITY.md](SECURITY.md). Questions and ideas belong in
+[Discussions](https://github.com/neratmatevz/BookmarkUp/discussions).
+
+## Support
+
+If BookmarkUp saves you a few clicks.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L4O426TJKI)
 
 ## License
 
