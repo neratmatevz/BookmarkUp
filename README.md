@@ -8,13 +8,13 @@
 
 Built for laptops and touchpads, where middle-click and Ctrl+click are awkward.
 
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=neratmatevz_BookmarkUp)](https://sonarcloud.io/summary/new_code?id=neratmatevz_BookmarkUp)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=neratmatevz_BookmarkUp&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=neratmatevz_BookmarkUp)
 [![Latest release](https://img.shields.io/github/v/release/neratmatevz/BookmarkUp?sort=semver)](https://github.com/neratmatevz/BookmarkUp/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285F4)
 ![Chromium](https://img.shields.io/badge/Chromium-116%2B-FB542B)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
+[![Website](https://img.shields.io/badge/Website-↗-0068f6)](https://neratmatevz.github.io/BookmarkUp/)
 </div>
 
 ---

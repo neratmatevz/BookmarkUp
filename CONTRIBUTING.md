@@ -49,6 +49,10 @@ src/
     styles/               base.css / main.css / settings.css
   shared/                 constants, URL helpers, search-engine list
   rules/                  declarativeNetRequest rule (the 204 redirect)
+docs/                   GitHub Pages site (served from main /docs)
+  index.html, main.js   site page + theme/i18n runtime
+  locales/<lang>.js     site translations (separate from the popup's)
+  assets/               site images (icon, screenshots)
 ```
 
 The core mechanism (marker + HTTP 204) is documented at the top of
@@ -73,21 +77,41 @@ Versioning and releases are handled by the maintainer - please **do not** bump
 
 ## Translations
 
-Translations are very welcome. English (`src/popup/locales/en.js`) is the source
-of truth; every other locale mirrors its keys. Missing keys fall back to English,
-so partial translations are fine, but please try to cover as many keys as possible.
+Translations are very welcome. There are **two separate sets** of translations,
+each with its own keys and its own English source of truth. Missing keys fall
+back to English, so partial translations are fine, but please try to cover as
+many keys as possible.
 
-To add a language in a PR:
+| Set | Source of truth | Locale files |
+| --- | --- | --- |
+| Extension popup UI | `src/popup/locales/en.js` | `src/popup/locales/<code>.js` |
+| Website (GitHub Pages) | `docs/locales/en.js` | `docs/locales/<code>.js` |
+
+Whenever you **add a new language, or update or fix an existing one, do it in
+both sets** so the extension and the site stay in sync (the key sets differ, so
+you cannot copy strings between them - translate each against its own `en.js`).
+
+### Extension popup UI (`src/popup/locales/`)
 
 1. Copy `src/popup/locales/en.js` to `src/popup/locales/<code>.js` and translate
    the values. Keep the keys unchanged and keep `$1`, `$2` placeholders in place.
    Language names (e.g. `languageGerman`) stay written in their own language.
 2. Register it in `src/popup/i18n.js`: import the file, add it to `DICTS` and
    `SUPPORTED`. If the language is right-to-left, also add its code to `RTL`.
-3. Add a `language<Name>` key to **every** locale file, and an `<option>` for it
-   in the Language dropdown in `src/popup/popup.html`.
+3. Add a `language<Name>` key to **every** popup locale file, and an `<option>`
+   for it in the Language dropdown in `src/popup/popup.html`.
 4. Optional: localize the manifest strings by adding
    `_locales/<code>/messages.json` (keys `appDesc`, `actionTitle`, `commandOpen`).
+
+### Website (`docs/locales/`)
+
+1. Copy `docs/locales/en.js` to `docs/locales/<code>.js` and translate the values,
+   keeping the keys unchanged. These are the site's own strings (marketing copy,
+   FAQ, footer) - **not** the same keys as the popup, so translate them fresh.
+2. Register it in `docs/main.js`: import the file, add it to `DICTS` and
+   `SUPPORTED`. If the language is right-to-left, also add its code to `RTL`.
+3. Add an `<option>` for it in the Language dropdown in `docs/index.html`, using
+   the language's native name (matching the extension's dropdown order).
 
 Not comfortable with the code part? Just open a **Translation** issue with the
 translated strings and a maintainer will wire them up.
