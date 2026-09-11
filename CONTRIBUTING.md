@@ -64,7 +64,9 @@ The core mechanism (marker + HTTP 204) is documented at the top of
 2. Make your change; keep commits focused.
 3. Open a pull request against `main`. `main` is protected, so all changes land
    through PRs.
-4. A maintainer reviews and merges.
+4. A maintainer reviews and merges. PRs also get a SonarQube Cloud quality-gate
+   check that a maintainer triggers, it must pass before
+   merge.
 
 Versioning and releases are handled by the maintainer - please **do not** bump
 `manifest.json` `version` or add release notes in a PR.
@@ -73,7 +75,7 @@ Versioning and releases are handled by the maintainer - please **do not** bump
 
 Translations are very welcome. English (`src/popup/locales/en.js`) is the source
 of truth; every other locale mirrors its keys. Missing keys fall back to English,
-so partial translations are fine, but please try to cover as many keys as possible..
+so partial translations are fine, but please try to cover as many keys as possible.
 
 To add a language in a PR:
 
