@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BookmarkUp - open any bookmark in a new tab</title>
+    <meta
+      name="description"
+      content="A lightweight, private Manifest V3 extension for Chromium browsers. Left-click a bookmark to open it in a new tab, without disturbing your current tab."
+    />
+    <link rel="icon" href="assets/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="#top">
+          <img src="assets/icon-128.png" alt="" />
+          <span>BookmarkUp</span>
+        </a>
+        <nav class="nav">
+          <a href="#features" data-i18n="navFeatures">Features</a>
+          <a href="#how" data-i18n="navHow">How it works</a>
+          <a href="#faq" data-i18n="navFaq">FAQ</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp" data-i18n="navGithub">GitHub</a>
+        </nav>
+        <div class="controls">
+          <select id="theme-select" aria-label="Theme" data-i18n-attr="aria-label:themeLabel">
+            <option value="system">◐ System</option>
+            <option value="light">☀ Light</option>
+            <option value="dark">☾ Dark</option>
+          </select>
+          <span class="lang-ctrl">
+            <span class="lang-icon" aria-hidden="true">🌐</span>
+            <select id="lang-select" aria-label="Language" data-i18n-attr="aria-label:langLabel">
+              <option value="system">System</option>
+              <option value="en">English</option>
+              <option value="sl">Slovenščina</option>
+              <option value="de">Deutsch</option>
+              <option value="fr">Français</option>
+              <option value="es">Español</option>
+              <option value="hr">Hrvatski</option>
+              <option value="bs">Bosanski</option>
+              <option value="sr">Српски</option>
+              <option value="ru">Русский</option>
+              <option value="hi">हिन्दी</option>
+              <option value="ar">العربية</option>
+              <option value="zh">简体中文</option>
+            </select>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Hero -->
+      <section class="hero">
+        <div class="container">
+          <img class="logo" src="assets/icon-128.png" alt="BookmarkUp" />
+          <h1 data-i18n="heroTagline">Open any bookmark in a new tab with a single left click.</h1>
+          <p class="sub" data-i18n="heroSub">
+            A lightweight, private Manifest V3 extension for Chromium browsers.
+          </p>
+          <div class="cta">
+            <a class="btn btn-primary" href="#install" data-i18n="ctaInstall">Install</a>
+            <a
+              class="btn btn-secondary"
+              href="https://github.com/neratmatevz/BookmarkUp"
+              data-i18n="ctaGithub"
+              >View on GitHub</a
+            >
+          </div>
+          <p class="note" data-i18n="heroNote">Free and open source. No accounts, no tracking.</p>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="features">
+        <div class="container">
+          <h2 data-i18n="featuresTitle">What it does</h2>
+          <div class="grid">
+            <div class="card"><h3 data-i18n="f1Title"></h3><p data-i18n="f1Body"></p></div>
+            <div class="card"><h3 data-i18n="f2Title"></h3><p data-i18n="f2Body"></p></div>
+            <div class="card"><h3 data-i18n="f3Title"></h3><p data-i18n="f3Body"></p></div>
+            <div class="card"><h3 data-i18n="f4Title"></h3><p data-i18n="f4Body"></p></div>
+            <div class="card"><h3 data-i18n="f5Title"></h3><p data-i18n="f5Body"></p></div>
+            <div class="card"><h3 data-i18n="f6Title"></h3><p data-i18n="f6Body"></p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section id="how">
+        <div class="container">
+          <h2 data-i18n="howTitle">How it works</h2>
+          <p class="how-intro" data-i18n="howIntro"></p>
+          <div class="steps">
+            <div class="card"><h3 data-i18n="how1Title"></h3><p data-i18n="how1Body"></p></div>
+            <div class="card"><h3 data-i18n="how2Title"></h3><p data-i18n="how2Body"></p></div>
+            <div class="card"><h3 data-i18n="how3Title"></h3><p data-i18n="how3Body"></p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screenshots (light/dark pair per shot; CSS shows the one matching the theme) -->
+      <section id="screenshots">
+        <div class="container">
+          <h2 data-i18n="shotsTitle">Take a look</h2>
+          <div class="shots">
+            <div class="shot">
+              <img class="shot-img shot-light" src="assets/popup-light.png" alt="" data-i18n-attr="alt:shotPopup" />
+              <img class="shot-img shot-dark" src="assets/popup-dark.png" alt="" data-i18n-attr="alt:shotPopup" />
+              <div class="caption" data-i18n="shotPopup">The bookmark popup</div>
+            </div>
+            <div class="shot">
+              <img class="shot-img shot-light" src="assets/settings-light.png" alt="" data-i18n-attr="alt:shotSettings" />
+              <img class="shot-img shot-dark" src="assets/settings-dark.png" alt="" data-i18n-attr="alt:shotSettings" />
+              <div class="caption" data-i18n="shotSettings">Settings</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy -->
+      <section id="privacy">
+        <div class="container">
+          <h2 data-i18n="privacyTitle">Privacy first</h2>
+          <ul class="checklist">
+            <li data-i18n="privacy1"></li>
+            <li data-i18n="privacy2"></li>
+            <li data-i18n="privacy3"></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Install -->
+      <section id="install">
+        <div class="container">
+          <h2 data-i18n="installTitle">Install</h2>
+          <p data-i18n="installIntro"></p>
+          <ol class="steps-list">
+            <li>
+              <a href="https://github.com/neratmatevz/BookmarkUp/releases/latest" data-i18n="install1"></a>
+            </li>
+            <li data-i18n="install2"></li>
+            <li data-i18n="install3"></li>
+            <li data-i18n="install4"></li>
+          </ol>
+          <p class="req" data-i18n="installReq"></p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <div class="container">
+          <h2 data-i18n="faqTitle">FAQ</h2>
+          <div class="faq">
+            <div class="faq-item">
+              <button type="button" class="faq-q" aria-expanded="false" aria-controls="a1" data-i18n="q1"></button>
+              <div class="faq-a" id="a1" hidden data-i18n="a1"></div>
+            </div>
+            <div class="faq-item">
+              <button type="button" class="faq-q" aria-expanded="false" aria-controls="a2" data-i18n="q2"></button>
+              <div class="faq-a" id="a2" hidden data-i18n="a2"></div>
+            </div>
+            <div class="faq-item">
+              <button type="button" class="faq-q" aria-expanded="false" aria-controls="a3" data-i18n="q3"></button>
+              <div class="faq-a" id="a3" hidden data-i18n="a3"></div>
+            </div>
+            <div class="faq-item">
+              <button type="button" class="faq-q" aria-expanded="false" aria-controls="a4" data-i18n="q4"></button>
+              <div class="faq-a" id="a4" hidden data-i18n="a4"></div>
+            </div>
+            <div class="faq-item">
+              <button type="button" class="faq-q" aria-expanded="false" aria-controls="a5" data-i18n="q5"></button>
+              <div class="faq-a" id="a5" hidden data-i18n="a5"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <span data-i18n="footerTagline"></span>
+        <nav>
+          <a href="https://github.com/neratmatevz/BookmarkUp" data-i18n="footerRepo">Repository</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp/issues" data-i18n="footerIssues">Issues</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp/discussions" data-i18n="footerDiscussions">Discussions</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp/releases" data-i18n="footerReleases">Releases</a>
+          <a href="https://ko-fi.com/L4O426TJKI" data-i18n="footerSupport">Support</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp/blob/main/LICENSE" data-i18n="footerLicense">MIT License</a>
+        </nav>
+        <span>&copy; <span id="year">2026</span> BookmarkUp</span>
+      </div>
+    </footer>
+  </body>
+</html>

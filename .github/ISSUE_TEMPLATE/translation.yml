@@ -5,9 +5,12 @@ body:
   - type: markdown
     attributes:
       value: >
-        Thanks for helping translate BookmarkUp! English
-        (`src/popup/locales/en.js`) is the source of truth; missing keys fall
-        back to English, so partial translations are fine, but please try to include as many as possible.
+        Thanks for helping translate BookmarkUp! There are two separate string
+        sets, each with its own English source of truth: the extension popup UI
+        (`src/popup/locales/en.js`) and the website
+        (`docs/locales/en.js`). A full translation covers both. Missing keys fall
+        back to English, so partial translations are fine, but please try to
+        include as many as possible. See CONTRIBUTING.md for the details.
   - type: input
     id: language
     attributes:
