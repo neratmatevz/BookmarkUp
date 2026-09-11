@@ -78,4 +78,13 @@ export default {
   untitledFolder: "Neimenovana mapa",
   blockedUrl: "Nepodržana poveznica je blokirana.",
   loadError: "Došlo je do pogreške pri učitavanju oznaka.",
+  // About
+  about: "O proširenju",
+  aboutTitle: "O proširenju",
+  aboutVersion: "Verzija $1",
+  aboutTagline: "Otvorite bilo koju oznaku u novoj kartici jednim lijevim klikom.",
+  aboutWebsite: "Web stranica",
+  aboutSource: "Izvorni kôd",
+  aboutSupport: "Podržite nas (Ko-fi)",
+  aboutLicense: "Objavljeno pod MIT licencom.",
 };

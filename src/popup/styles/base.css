@@ -117,6 +117,13 @@ body {
   font-weight: 700;
 }
 
+/* The About + Settings buttons sit together at the end of the header. */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 .icon-btn {
   display: inline-flex;
   align-items: center;
@@ -151,6 +158,13 @@ body {
 /* The settings gear reads better a little larger than other icon buttons. */
 #settings-open {
   font-size: 20px;
+}
+
+/* The About button is a crisp SVG info icon; size it to sit level with the gear. */
+#about-open svg {
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 /* Views share the popup's flex column; only one is shown at a time. */

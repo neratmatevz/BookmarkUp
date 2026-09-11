@@ -76,4 +76,13 @@ export default {
   untitledFolder: "अनामांकित फ़ोल्डर",
   blockedUrl: "एक असमर्थित लिंक अवरुद्ध किया गया।",
   loadError: "बुकमार्क लोड करते समय कुछ गलत हुआ।",
+  // About
+  about: "परिचय",
+  aboutTitle: "एक्सटेंशन के बारे में",
+  aboutVersion: "संस्करण $1",
+  aboutTagline: "किसी भी बुकमार्क को एक ही बाएँ क्लिक से नए टैब में खोलें।",
+  aboutWebsite: "वेबसाइट",
+  aboutSource: "सोर्स कोड",
+  aboutSupport: "समर्थन करें (Ko-fi)",
+  aboutLicense: "MIT लाइसेंस के तहत जारी।",
 };

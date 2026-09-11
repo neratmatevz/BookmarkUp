@@ -78,4 +78,13 @@ export default {
   untitledFolder: "Dossier sans titre",
   blockedUrl: "Un lien non pris en charge a été bloqué.",
   loadError: "Une erreur s'est produite lors du chargement des favoris.",
+  // About
+  about: "À propos",
+  aboutTitle: "À propos de l'extension",
+  aboutVersion: "Version $1",
+  aboutTagline: "Ouvrez n'importe quel favori dans un nouvel onglet d'un simple clic gauche.",
+  aboutWebsite: "Site web",
+  aboutSource: "Code source",
+  aboutSupport: "Soutenir (Ko-fi)",
+  aboutLicense: "Publié sous licence MIT.",
 };

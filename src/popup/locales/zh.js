@@ -75,4 +75,13 @@ export default {
   untitledFolder: "未命名文件夹",
   blockedUrl: "已阻止不受支持的链接。",
   loadError: "加载书签时出错。",
+  // About
+  about: "关于",
+  aboutTitle: "关于扩展",
+  aboutVersion: "版本 $1",
+  aboutTagline: "只需左键单击，即可在新标签页中打开任意书签。",
+  aboutWebsite: "网站",
+  aboutSource: "源代码",
+  aboutSupport: "支持我们 (Ko-fi)",
+  aboutLicense: "基于 MIT 许可证发布。",
 };

@@ -77,4 +77,13 @@ export default {
   untitledFolder: "Untitled folder",
   blockedUrl: "Blocked an unsupported link.",
   loadError: "Something went wrong loading bookmarks.",
+  // About
+  about: "About",
+  aboutTitle: "About extension",
+  aboutVersion: "Version $1",
+  aboutTagline: "Open any bookmark in a new tab with a single left click.",
+  aboutWebsite: "Website",
+  aboutSource: "Source code",
+  aboutSupport: "Support (Ko-fi)",
+  aboutLicense: "Released under the MIT License.",
 };
