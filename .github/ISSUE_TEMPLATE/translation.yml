@@ -1,0 +1,37 @@
+name: Translation
+description: Add a new language or fix an existing one
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for helping translate BookmarkUp! English
+        (`src/popup/locales/en.js`) is the source of truth; missing keys fall
+        back to English, so partial translations are fine, but please try to include as many as possible.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: e.g. Portuguese (pt), Traditional Chinese (zh-TW), ...
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is this?
+      options:
+        - New language
+        - Fix or improve an existing language
+    validations:
+      required: true
+  - type: textarea
+    id: strings
+    attributes:
+      label: Translations
+      description: Paste the translated (or corrected) strings in the used format, or note that you'll open a PR.
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: Pull request
+      options:
+        - label: I'm willing to open a PR for this

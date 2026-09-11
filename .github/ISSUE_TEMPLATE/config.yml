@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/neratmatevz/BookmarkUp/discussions
+    about: Ask questions or share ideas in Discussions (not the issue tracker).
+  - name: Report a security vulnerability
+    url: https://github.com/neratmatevz/BookmarkUp/security/advisories/new
+    about: Report security issues privately. Please do not open a public issue.
