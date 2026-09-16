@@ -15,7 +15,7 @@
   --border: #d0d7de;
   --row-hover: #f3f4f6;
   --row-active: #e8eaed;
-  --accent: #4f46e5;
+  --accent: #0068f6; /* focus/emphasis outline - matches the brand blue */
   --accent-fg: #ffffff;
   --shadow: rgba(27, 31, 36, 0.12);
   --off: #cbd5e1;
@@ -38,7 +38,7 @@
   --border: #30363d;
   --row-hover: #262c34;
   --row-active: #2f3742;
-  --accent: #7c74ff;
+  --accent: #2f86ff; /* focus/emphasis outline - matches the brand blue (dark) */
   --accent-fg: #ffffff;
   --shadow: rgba(0, 0, 0, 0.4);
   --off: #4a5261;
@@ -60,10 +60,11 @@
     --border: #30363d;
     --row-hover: #262c34;
     --row-active: #2f3742;
-    --accent: #7c74ff;
+    --accent: #2f86ff; /* focus/emphasis outline - matches the brand blue (dark) */
     --accent-fg: #ffffff;
     --shadow: rgba(0, 0, 0, 0.4);
     --off: #4a5261;
+    --brand-blue: #2f86ff; /* icon blue (lightened for dark bg) */
     --on: #2ea043;
     --danger: #f85149;
     --danger-fg: #ffffff;
