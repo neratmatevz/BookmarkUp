@@ -101,5 +101,6 @@ export default {
   footerDiscussions: "النقاشات",
   footerReleases: "الإصدارات",
   footerSupport: "ادعمنا (Ko-fi)",
+  footerPrivacy: "الخصوصية",
   footerLicense: "رخصة MIT",
 };

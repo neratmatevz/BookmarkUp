@@ -100,5 +100,6 @@ export default {
   footerDiscussions: "Discussions",
   footerReleases: "Releases",
   footerSupport: "Support (Ko-fi)",
+  footerPrivacy: "Privacy",
   footerLicense: "MIT License",
 };

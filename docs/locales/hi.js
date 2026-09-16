@@ -100,5 +100,6 @@ export default {
   footerDiscussions: "चर्चाएँ",
   footerReleases: "रिलीज़",
   footerSupport: "समर्थन करें (Ko-fi)",
+  footerPrivacy: "गोपनीयता",
   footerLicense: "MIT लाइसेंस",
 };

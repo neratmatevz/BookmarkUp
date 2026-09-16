@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "BookmarkUp",
   "version": "1.4.0",
+  "homepage_url": "https://neratmatevz.github.io/BookmarkUp/",
   "default_locale": "en",
   "description": "__MSG_appDesc__",
   "minimum_chrome_version": "116",

@@ -100,5 +100,6 @@ export default {
   footerDiscussions: "讨论",
   footerReleases: "发布",
   footerSupport: "支持我们 (Ko-fi)",
+  footerPrivacy: "隐私",
   footerLicense: "MIT 许可证",
 };

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy - BookmarkUp</title>
+    <meta
+      name="description"
+      content="BookmarkUp privacy policy. No accounts, no tracking, no analytics. Your bookmarks never leave your device."
+    />
+    <link rel="icon" href="assets/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Respect a theme the visitor chose on the main site (no flash of the wrong theme). -->
+    <script>
+      try {
+        var t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch (e) {
+        /* private mode / storage blocked: fall back to system theme */
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="index.html">
+          <img src="assets/icon-128.png" alt="" />
+          <span>BookmarkUp</span>
+        </a>
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section style="border-top: 0">
+        <div class="container">
+          <h1>Privacy Policy</h1>
+          <p class="sub" style="color: var(--fg-muted)">Last updated: 16 September 2026</p>
+
+          <p>
+            BookmarkUp is a browser extension that opens bookmarks in a new tab with a single left
+            click. It is built to respect your privacy: <strong>it does not collect, store, transmit,
+            or sell any personal data</strong>. There are no accounts, no tracking, and no analytics.
+          </p>
+
+          <h2>The short version</h2>
+          <ul class="checklist">
+            <li>No accounts, no sign-in, no tracking, no analytics.</li>
+            <li>Nothing you do is sent to us or to any third party. We operate no servers that
+              receive your data.</li>
+            <li>Your bookmarks are read only to display and open them on your own device, and are
+              never uploaded.</li>
+            <li>Your settings are stored locally in your browser and are removed when you uninstall.</li>
+          </ul>
+
+          <h2>What the extension accesses, and why</h2>
+          <p>
+            To do its job, BookmarkUp needs certain browser permissions. Each is used only for the
+            feature described, entirely on your device:
+          </p>
+          <ul class="checklist">
+            <li><strong>Bookmarks</strong> - to read your bookmarks so it can list them in the popup,
+              open them, and apply the small marker that makes the new-tab behavior work. It can also
+              restore the original bookmark URLs (for example when you remove the extension).</li>
+            <li><strong>Storage</strong> - to save your own settings (theme, language, and the various
+              new-tab behavior toggles) locally in your browser.</li>
+            <li><strong>Access to websites you visit</strong> - used only at the moment you click a
+              managed bookmark, to open the real page in a new tab and, if you have turned on the
+              same-tab or search-engine options, to check the address of the tab you are currently on
+              so it can decide where to open. This happens locally; the contents of the pages you
+              visit are never read, stored, or transmitted.</li>
+            <li><strong>Favicons</strong> - to show each site's small icon next to bookmarks and search
+              engines in the popup.</li>
+          </ul>
+
+          <h2>Network activity</h2>
+          <p>
+            To open a bookmark without disturbing the page you are on, BookmarkUp makes a single
+            empty, no-content network request to a neutral endpoint that returns an empty "204"
+            response. This request carries none of your data and returns nothing; it exists only to
+            stop your current tab from navigating. The extension makes no other network requests and
+            sends no data anywhere.
+          </p>
+
+          <h2>Data storage and retention</h2>
+          <p>
+            The only data BookmarkUp stores is your settings, kept in your browser's local extension
+            storage on your device. It is never synced to us. When you remove the extension (via
+            "Delete extension" in Settings, or by uninstalling it), your original bookmarks are
+            restored and the saved settings are cleared.
+          </p>
+
+          <h2>Third parties</h2>
+          <p>
+            BookmarkUp shares no data with third parties, because it collects none. It includes no
+            third-party analytics, advertising, or tracking code, and loads no remote code - all of
+            its code ships inside the extension package.
+          </p>
+
+          <h2>Children's privacy</h2>
+          <p>
+            BookmarkUp does not collect any personal information from anyone, including children.
+          </p>
+
+          <h2>Changes to this policy</h2>
+          <p>
+            If this policy changes, the updated version will be posted on this page with a new "Last
+            updated" date. Material changes will also be noted in the extension's release notes.
+          </p>
+
+          <h2>Contact</h2>
+          <p>
+            Questions about this policy or the extension can be raised on the project's
+            <a href="https://github.com/neratmatevz/BookmarkUp/issues">GitHub issues</a> or
+            <a href="https://github.com/neratmatevz/BookmarkUp/discussions">discussions</a> page.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <span>BookmarkUp - a private, open-source extension.</span>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp">Repository</a>
+          <a href="https://github.com/neratmatevz/BookmarkUp/blob/main/LICENSE">MIT License</a>
+        </nav>
+        <span>&copy; <span id="year">2026</span> BookmarkUp</span>
+      </div>
+    </footer>
+  </body>
+</html>

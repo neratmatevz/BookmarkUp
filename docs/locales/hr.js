@@ -100,5 +100,6 @@ export default {
   footerDiscussions: "Rasprave",
   footerReleases: "Izdanja",
   footerSupport: "Podržite nas (Ko-fi)",
+  footerPrivacy: "Privatnost",
   footerLicense: "MIT licenca",
 };
