@@ -92,12 +92,12 @@ to return to your bookmarks). Inside you'll find:
 
 ## Install
 
-BookmarkUp is at **v1.4.0** and works in Chrome, Brave, Edge, and other Chromium-based
+BookmarkUp is at **v1.4.1** and works in Chrome, Brave, Edge, and other Chromium-based
 browsers (version 116 or newer).
 
 ### From the Chrome Web Store (recommended)
 
-[**Add to Chrome**](https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID) - one click,
+[**Add to Chrome**](https://chromewebstore.google.com/detail/ecdbgiafohefomgblageakjlchfeodgg) - one click,
 and it stays up to date automatically.
 
 ### From GitHub (developer mode)
