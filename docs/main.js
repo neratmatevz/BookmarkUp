@@ -135,6 +135,115 @@ function init() {
 
   const year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
+
+  initCarousel();
+}
+
+/* --------------------------------------------------------------- carousel */
+
+function initCarousel() {
+  const root = document.getElementById("carousel");
+  const track = root?.querySelector(".car-track");
+  const slides = root ? Array.from(root.querySelectorAll(".car-slide")) : [];
+  const dotsWrap = document.getElementById("car-dots");
+  if (!root || !track || slides.length === 0) return;
+
+  const lightbox = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lb-img");
+  const lbDotsWrap = document.getElementById("lb-dots");
+  let index = 0;
+  let lastFocus = null;
+
+  const makeDots = (container, cls) =>
+    slides.map((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = cls;
+      dot.setAttribute("role", "tab");
+      dot.setAttribute("aria-label", `Image ${i + 1} of ${slides.length}`);
+      dot.addEventListener("click", () => go(i));
+      container?.append(dot);
+      return dot;
+    });
+  const dots = makeDots(dotsWrap, "car-dot");
+  const lbDots = lbDotsWrap ? makeDots(lbDotsWrap, "lb-dot") : [];
+
+  function go(i) {
+    index = (i + slides.length) % slides.length;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    for (const set of [dots, lbDots]) {
+      set.forEach((dot, di) => dot.setAttribute("aria-selected", String(di === index)));
+    }
+    if (lightbox && lbImg && !lightbox.hidden) {
+      lbImg.src = slides[index].src;
+      lbImg.alt = slides[index].alt;
+    }
+  }
+
+  root.querySelector(".car-prev")?.addEventListener("click", () => go(index - 1));
+  root.querySelector(".car-next")?.addEventListener("click", () => go(index + 1));
+  root.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") go(index - 1);
+    else if (event.key === "ArrowRight") go(index + 1);
+  });
+
+  /* ------- Lightbox ------- */
+  if (lightbox && lbImg) {
+    const open = (i) => {
+      lastFocus = document.activeElement;
+      go(i);
+      lbImg.src = slides[index].src;
+      lbImg.alt = slides[index].alt;
+      lightbox.hidden = false;
+      document.body.style.overflow = "hidden";
+      lightbox.querySelector(".lb-close")?.focus();
+    };
+    const close = () => {
+      lightbox.hidden = true;
+      document.body.style.overflow = "";
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    };
+
+    slides.forEach((slide, i) => slide.addEventListener("click", () => open(i)));
+    lightbox.querySelector(".lb-prev")?.addEventListener("click", () => go(index - 1));
+    lightbox.querySelector(".lb-next")?.addEventListener("click", () => go(index + 1));
+    lightbox.querySelector(".lb-close")?.addEventListener("click", close);
+    // Click on the dimmed backdrop (not the image or buttons) closes.
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) close();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (lightbox.hidden) return;
+      if (event.key === "Escape") close();
+      else if (event.key === "ArrowLeft") go(index - 1);
+      else if (event.key === "ArrowRight") go(index + 1);
+      else if (event.key === "Tab") {
+        // Trap focus within the lightbox's buttons.
+        const btns = lightbox.querySelectorAll("button");
+        if (!btns.length) return;
+        const first = btns[0];
+        const last = btns[btns.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          last.focus();
+          event.preventDefault();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          first.focus();
+          event.preventDefault();
+        }
+      }
+    });
+
+    // Swipe left/right on touch.
+    let startX = 0;
+    lbImg.addEventListener("touchstart", (e) => { startX = e.changedTouches[0].clientX; }, { passive: true });
+    lbImg.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  }
+
+  go(0);
 }
 
 init();

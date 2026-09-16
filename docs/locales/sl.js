@@ -103,4 +103,9 @@ export default {
   footerSupport: "Podprite nas (Ko-fi)",
   footerPrivacy: "Zasebnost",
   footerLicense: "Licenca MIT",
+
+  // Carousel
+  carouselPrev: "Prejšnja slika",
+  carouselNext: "Naslednja slika",
+  carouselClose: "Zapri",
 };

@@ -102,4 +102,9 @@ export default {
   footerSupport: "Soutenir (Ko-fi)",
   footerPrivacy: "Confidentialité",
   footerLicense: "Licence MIT",
+
+  // Carousel
+  carouselPrev: "Image précédente",
+  carouselNext: "Image suivante",
+  carouselClose: "Fermer",
 };

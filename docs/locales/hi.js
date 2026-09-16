@@ -102,4 +102,9 @@ export default {
   footerSupport: "समर्थन करें (Ko-fi)",
   footerPrivacy: "गोपनीयता",
   footerLicense: "MIT लाइसेंस",
+
+  // Carousel
+  carouselPrev: "पिछली छवि",
+  carouselNext: "अगली छवि",
+  carouselClose: "बंद करें",
 };

@@ -103,4 +103,9 @@ export default {
   footerSupport: "ادعمنا (Ko-fi)",
   footerPrivacy: "الخصوصية",
   footerLicense: "رخصة MIT",
+
+  // Carousel
+  carouselPrev: "الصورة السابقة",
+  carouselNext: "الصورة التالية",
+  carouselClose: "إغلاق",
 };

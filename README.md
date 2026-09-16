@@ -30,6 +30,12 @@ BookmarkUp flips the default: **a plain left click opens the bookmark in a new t
 your current tab stays exactly as it was** - same page, same scroll position, even text
 you'd typed but not yet submitted. Nothing is lost.
 
+<div align="center">
+
+<img src="docs/assets/promo/01.%20Promo_Overview%20-%20BookmarkUp.webp" width="820" alt="BookmarkUp: open any bookmark in a new tab with one left click" />
+
+</div>
+
 ## What it does
 
 - **Left-click a bookmark → new tab.** Works with the bookmarks you already have, right

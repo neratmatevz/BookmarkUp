@@ -102,4 +102,9 @@ export default {
   footerSupport: "Поддержать (Ko-fi)",
   footerPrivacy: "Конфиденциальность",
   footerLicense: "Лицензия MIT",
+
+  // Carousel
+  carouselPrev: "Предыдущее изображение",
+  carouselNext: "Следующее изображение",
+  carouselClose: "Закрыть",
 };

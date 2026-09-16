@@ -102,4 +102,9 @@ export default {
   footerSupport: "支持我们 (Ko-fi)",
   footerPrivacy: "隐私",
   footerLicense: "MIT 许可证",
+
+  // Carousel
+  carouselPrev: "上一张图片",
+  carouselNext: "下一张图片",
+  carouselClose: "关闭",
 };
