@@ -54,7 +54,7 @@ async function onMarkingToggle() {
       type: MSG.setMarking,
       enabled: next,
     });
-    if (!res || res.ok !== true) {
+    if (res?.ok !== true) {
       throw new Error(res?.error || "Could not update bookmarks.");
     }
     // Turning the master on re-includes every bookmark (SW cleared the set).

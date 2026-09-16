@@ -104,7 +104,8 @@
   border-bottom: 0;
 }
 
-.setting label {
+.setting label,
+.setting .setting-label {
   font-size: 12px;
   font-weight: 500;
 }
@@ -340,11 +341,20 @@
   cursor: pointer;
 }
 
+/* The checkbox overlays the whole switch so clicking the track toggles it,
+ * without wrapping the control in an empty <label>. */
 .switch input {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   opacity: 0;
-  width: 0;
-  height: 0;
+  cursor: pointer;
+}
+
+.switch input:disabled {
+  cursor: default;
 }
 
 .switch-track {
@@ -354,6 +364,7 @@
   border-radius: 999px;
   background: var(--off);
   transition: background 0.15s ease;
+  pointer-events: none;
 }
 
 .switch-track::after {

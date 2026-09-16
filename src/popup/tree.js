@@ -223,13 +223,14 @@ function onSearch() {
     ul.append(li);
   }
   els.tree.append(ul);
-  setStatus(
-    matches.length >= MAX_SEARCH_RESULTS
-      ? t("statusResultsMax", MAX_SEARCH_RESULTS)
-      : matches.length === 1
-        ? t("statusResultOne", matches.length)
-        : t("statusResultOther", matches.length),
-  );
+  setStatus(resultsStatus(matches.length));
+}
+
+/** The status line for a search result count (max / singular / plural). */
+function resultsStatus(count) {
+  if (count >= MAX_SEARCH_RESULTS) return t("statusResultsMax", MAX_SEARCH_RESULTS);
+  if (count === 1) return t("statusResultOne", count);
+  return t("statusResultOther", count);
 }
 
 /* ------------------------------------------------------------------ *
@@ -279,7 +280,7 @@ function onTreeKeydown(event) {
   let next;
   if (index === -1) {
     // Focus isn't on a row yet: ArrowDown → first, ArrowUp → last.
-    next = event.key === "ArrowDown" ? rows[0] : rows[rows.length - 1];
+    next = event.key === "ArrowDown" ? rows[0] : rows.at(-1);
   } else if (event.key === "ArrowDown") {
     next = rows[Math.min(index + 1, rows.length - 1)];
   } else {

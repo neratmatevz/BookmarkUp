@@ -20,7 +20,7 @@ import { initSearchEngines, refreshSearchEngines } from "./settings/search-engin
 import { initSameSite } from "./settings/same-site.js";
 import { initDelete, resetDelete } from "./settings/delete.js";
 
-init();
+await init();
 
 async function init() {
   // Resolve the language and fill static UI text before anything renders.

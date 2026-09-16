@@ -63,7 +63,7 @@
         data-i18n-attr="aria-label:bookmarks"
       ></main>
 
-      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <output id="status" class="status" aria-live="polite"></output>
     </section>
 
     <!-- Settings view -->
@@ -145,17 +145,17 @@
                 <span data-i18n="backgroundLabel">Open in background</span>
                 <span class="hint" data-i18n="backgroundHint">Bookmarks open without closing the extension popup</span>
               </label>
-              <label class="switch">
+              <span class="switch">
                 <input type="checkbox" id="background-toggle" />
                 <span class="switch-track" aria-hidden="true"></span>
-              </label>
+              </span>
             </div>
 
             <div class="setting no-divider">
-              <label>
+              <div class="setting-label">
                 <span data-i18n="markingLabel">Bookmark bar functionality</span> <span id="marking-state"></span>
                 <span class="hint" id="marking-hint"></span>
-              </label>
+              </div>
               <button type="button" id="marking-toggle" class="btn"></button>
             </div>
 
@@ -200,10 +200,10 @@
                 <span data-i18n="sameSiteLabel">Same-site in current tab</span>
                 <span class="hint" data-i18n="sameSiteHint">When a bookmark points to the site you're already on, open it in same tab</span>
               </label>
-              <label class="switch">
+              <span class="switch">
                 <input type="checkbox" id="samesite-toggle" />
                 <span class="switch-track" aria-hidden="true"></span>
-              </label>
+              </span>
             </div>
           </div>
         </section>
@@ -230,7 +230,7 @@
             Delete extension
           </button>
         </div>
-        <p id="settings-status" class="status" role="status" aria-live="polite"></p>
+        <output id="settings-status" class="status" aria-live="polite"></output>
       </footer>
     </section>
 

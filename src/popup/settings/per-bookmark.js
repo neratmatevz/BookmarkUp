@@ -75,7 +75,7 @@ function makeItem(entry) {
   title.textContent = entry.title || entry.url;
   title.title = entry.title ? `${entry.title}\n${entry.url}` : entry.url;
 
-  const toggle = document.createElement("label");
+  const toggle = document.createElement("span");
   toggle.className = "switch";
   const input = document.createElement("input");
   input.type = "checkbox";

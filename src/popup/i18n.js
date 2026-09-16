@@ -25,7 +25,7 @@ import ar from "./locales/ar.js";
 import zh from "./locales/zh.js";
 
 const DICTS = { en, sl, de, fr, es, hr, sr, bs, ru, hi, ar, zh };
-const SUPPORTED = ["en", "sl", "de", "fr", "es", "hr", "sr", "bs", "ru", "hi", "ar", "zh"];
+const SUPPORTED = new Set(["en", "sl", "de", "fr", "es", "hr", "sr", "bs", "ru", "hi", "ar", "zh"]);
 const FALLBACK = "en";
 
 // Right-to-left languages: the popup flips to dir="rtl" for these.
@@ -43,7 +43,7 @@ async function resolveSystem() {
     const langs = await chrome.i18n.getAcceptLanguages();
     for (const lang of langs || []) {
       const base = String(lang).toLowerCase().split("-")[0];
-      if (SUPPORTED.includes(base)) return base;
+      if (SUPPORTED.has(base)) return base;
     }
   } catch {
     /* fall through to the default */
@@ -56,7 +56,7 @@ async function resolveSystem() {
  * @param {"system"|"en"|"sl"} pref
  */
 export async function setLanguage(pref) {
-  const lang = SUPPORTED.includes(pref) ? pref : await resolveSystem();
+  const lang = SUPPORTED.has(pref) ? pref : await resolveSystem();
   activeCode = DICTS[lang] ? lang : FALLBACK;
   active = DICTS[activeCode];
 }
