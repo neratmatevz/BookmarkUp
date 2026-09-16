@@ -100,5 +100,17 @@ export default {
   footerDiscussions: "चर्चाएँ",
   footerReleases: "रिलीज़",
   footerSupport: "समर्थन करें (Ko-fi)",
+  footerPrivacy: "गोपनीयता",
   footerLicense: "MIT लाइसेंस",
+
+  // Carousel
+  carouselPrev: "पिछली छवि",
+  carouselNext: "अगली छवि",
+  carouselClose: "बंद करें",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "Chrome वेब स्टोर से",
+  installStoreCta: "Chrome में जोड़ें",
+  installDevTitle: "GitHub से (डेवलपर मोड)",
+  installDevIntro: "मैन्युअल रूप से इंस्टॉल करना चाहते हैं या नवीनतम बिल्ड चाहिए? सीधे GitHub से इंस्टॉल करें:",
 };

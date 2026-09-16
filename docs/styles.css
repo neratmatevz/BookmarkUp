@@ -15,10 +15,6 @@
   --radius: 12px;
   color-scheme: light dark;
 }
-:root[data-theme="dark"],
-:root:not([data-theme="light"]) {
-  /* placeholder so the cascade order is defined; real dark values below */
-}
 :root[data-theme="dark"] {
   --bg: #0d1117;
   --fg: #e6edf3;
@@ -281,48 +277,224 @@ select {
   margin: -8px 0 24px;
 }
 
-/* Screenshots (placeholders until real images are dropped in assets/) */
-.shots {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
+/* Screenshots carousel: one promo image at a time, with prev/next arrows. */
+.carousel {
+  position: relative;
 }
-.shot {
+.car-viewport {
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
   background: var(--surface);
 }
-.shot-img {
-  display: block;
+.car-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .car-track {
+    transition: none;
+  }
+}
+.car-slide {
+  flex: 0 0 100%;
   width: 100%;
-  height: auto;
-}
-/* Show the screenshot matching the active theme (mirrors the token cascade:
-   light by default, dark for a forced dark choice or system-dark unless forced
-   light). */
-.shot-dark {
-  display: none;
-}
-:root[data-theme="dark"] .shot-light {
-  display: none;
-}
-:root[data-theme="dark"] .shot-dark {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
   display: block;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .shot-light {
-    display: none;
-  }
-  :root:not([data-theme="light"]) .shot-dark {
-    display: block;
+.car-arrow {
+  /* Full-height column over the left/right 10% of the image: a big, easy hit
+   * target. The middle 80% stays clickable to open the lightbox. */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  line-height: 1;
+  /* Fixed dark: the promo images are always light, so this reads in both themes. */
+  color: #1f2328;
+  background: transparent;
+  border: 0;
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.15s ease, background 0.15s ease;
+}
+/* Arrows reveal on hover; keep them shown when focused for keyboard users. */
+.carousel:hover .car-arrow,
+.car-arrow:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  /* Touch devices have no hover, so keep the arrows visible there. */
+  .car-arrow {
+    opacity: 1;
   }
 }
-.shot .caption {
-  padding: 12px 16px;
-  font-size: 14px;
-  color: var(--fg-muted);
-  border-top: 1px solid var(--border);
+.car-prev {
+  left: 0;
+}
+.car-next {
+  right: 0;
+}
+.car-arrow:hover {
+  color: var(--brand);
+}
+/* A soft dark fade from the edge shows the clickable zone on hover. */
+.car-prev:hover {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.22), transparent);
+}
+.car-next:hover {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.22), transparent);
+}
+.car-arrow:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.car-slide {
+  cursor: zoom-in;
+}
+
+/* Lightbox: full-screen viewer opened by clicking a slide. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(2px);
+}
+.lightbox[hidden] {
+  display: none;
+}
+.lb-img {
+  max-width: min(1280px, 96vw);
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.lb-arrow,
+.lb-close {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  /* Dark backing so the white icon stays visible over the light images too. */
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  line-height: 1;
+  cursor: pointer;
+}
+.lb-arrow svg {
+  width: 28px;
+  height: 28px;
+}
+.lb-close svg {
+  width: 24px;
+  height: 24px;
+}
+.lb-arrow {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+}
+.lb-prev {
+  left: 16px;
+}
+.lb-next {
+  right: 16px;
+}
+.lb-close {
+  top: 16px;
+  right: 16px;
+  width: 46px;
+  height: 46px;
+}
+.lb-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  padding: 9px 14px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 999px;
+}
+.lb-dot {
+  width: 11px;
+  height: 11px;
+  padding: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.lb-dot[aria-selected="true"] {
+  background: #ffffff;
+}
+.lb-dot:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.lb-arrow:hover,
+.lb-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+.lb-arrow:focus-visible,
+.lb-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .lb-arrow {
+    width: 44px;
+    height: 44px;
+    font-size: 28px;
+  }
+}
+.car-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.car-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 1.5px solid var(--brand);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.car-dot[aria-selected="true"] {
+  background: var(--brand);
+}
+.car-dot:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .car-arrow {
+    font-size: 36px;
+  }
 }
 
 /* Lists (privacy, install) */
@@ -340,6 +512,16 @@ select {
   color: var(--fg-muted);
   font-size: 14px;
   margin-top: 16px;
+}
+#install .req {
+  margin-top: 0;
+}
+.install-sub {
+  font-size: 20px;
+  margin: 30px 0 12px;
+}
+.install-cta {
+  margin: 0;
 }
 
 /* FAQ */

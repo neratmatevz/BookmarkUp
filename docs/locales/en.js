@@ -100,5 +100,17 @@ export default {
   footerDiscussions: "Discussions",
   footerReleases: "Releases",
   footerSupport: "Support (Ko-fi)",
+  footerPrivacy: "Privacy",
   footerLicense: "MIT License",
+
+  // Carousel
+  carouselPrev: "Previous image",
+  carouselNext: "Next image",
+  carouselClose: "Close",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "From the Chrome Web Store",
+  installStoreCta: "Add to Chrome",
+  installDevTitle: "From GitHub (developer mode)",
+  installDevIntro: "Prefer to install manually, or want the newest build? Install straight from GitHub:",
 };

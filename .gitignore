@@ -7,6 +7,10 @@ releases/
 web-ext-artifacts/
 dist/
 
+# Promo images: PNGs are for the Web Store upload only, not versioned.
+# The WebP versions used by the README/site ARE tracked.
+docs/assets/promo/*.png
+
 # Browser-generated when loading unpacked (indexed DNR rulesets)
 _metadata/
 

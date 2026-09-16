@@ -103,21 +103,37 @@
         </div>
       </section>
 
-      <!-- Screenshots (light/dark pair per shot; CSS shows the one matching the theme) -->
+      <!-- Screenshots: a one-at-a-time carousel of the promo images -->
       <section id="screenshots">
         <div class="container">
           <h2 data-i18n="shotsTitle">Take a look</h2>
-          <div class="shots">
-            <div class="shot">
-              <img class="shot-img shot-light" src="assets/popup-light.png" alt="" data-i18n-attr="alt:shotPopup" />
-              <img class="shot-img shot-dark" src="assets/popup-dark.png" alt="" data-i18n-attr="alt:shotPopup" />
-              <div class="caption" data-i18n="shotPopup">The bookmark popup</div>
+          <div class="carousel" id="carousel">
+            <button
+              type="button"
+              class="car-arrow car-prev"
+              aria-label="Previous image"
+              data-i18n-attr="aria-label:carouselPrev"
+            >
+              <span aria-hidden="true">&#8249;</span>
+            </button>
+            <div class="car-viewport">
+              <div class="car-track">
+                <img class="car-slide" src="assets/promo/01.%20Promo_Overview%20-%20BookmarkUp.webp" alt="Open any bookmark in a new tab with one left click" />
+                <img class="car-slide" src="assets/promo/02.%20Promo_HIW%20-%20BookmarkUp.webp" alt="A left click on a bookmark opens it in a new tab" />
+                <img class="car-slide" src="assets/promo/03.%20Promo_Settings%20-%20BookmarkUp.webp" alt="Fine-grained control in Settings" />
+                <img class="car-slide" src="assets/promo/04.%20Promo_Themes%20-%20BookmarkUp.webp" alt="Light, dark, or system theme" />
+                <img class="car-slide" src="assets/promo/05.%20Promo_Languages%20-%20BookmarkUp.webp" alt="Interface available in 12 languages" />
+              </div>
             </div>
-            <div class="shot">
-              <img class="shot-img shot-light" src="assets/settings-light.png" alt="" data-i18n-attr="alt:shotSettings" />
-              <img class="shot-img shot-dark" src="assets/settings-dark.png" alt="" data-i18n-attr="alt:shotSettings" />
-              <div class="caption" data-i18n="shotSettings">Settings</div>
-            </div>
+            <button
+              type="button"
+              class="car-arrow car-next"
+              aria-label="Next image"
+              data-i18n-attr="aria-label:carouselNext"
+            >
+              <span aria-hidden="true">&#8250;</span>
+            </button>
+            <div class="car-dots" id="car-dots" role="tablist" aria-label="Choose image"></div>
           </div>
         </div>
       </section>
@@ -138,7 +154,20 @@
       <section id="install">
         <div class="container">
           <h2 data-i18n="installTitle">Install</h2>
-          <p data-i18n="installIntro"></p>
+          <p class="req" data-i18n="installReq"></p>
+
+          <h3 class="install-sub" data-i18n="installStoreTitle">From the Chrome Web Store</h3>
+          <p class="install-cta">
+            <a
+              class="btn btn-primary"
+              href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID"
+              data-i18n="installStoreCta"
+              >Add to Chrome</a
+            >
+          </p>
+
+          <h3 class="install-sub" data-i18n="installDevTitle">From GitHub (developer mode)</h3>
+          <p data-i18n="installDevIntro"></p>
           <ol class="steps-list">
             <li>
               <a href="https://github.com/neratmatevz/BookmarkUp/releases/latest" data-i18n="install1"></a>
@@ -147,7 +176,6 @@
             <li data-i18n="install3"></li>
             <li data-i18n="install4"></li>
           </ol>
-          <p class="req" data-i18n="installReq"></p>
         </div>
       </section>
 
@@ -181,6 +209,49 @@
       </section>
     </main>
 
+    <!-- Lightbox: full-screen viewer for the carousel images -->
+    <div
+      class="lightbox"
+      id="lightbox"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-label="Screenshot viewer"
+    >
+      <button
+        type="button"
+        class="lb-arrow lb-prev"
+        aria-label="Previous image"
+        data-i18n-attr="aria-label:carouselPrev"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <img class="lb-img" id="lb-img" alt="" />
+      <button
+        type="button"
+        class="lb-arrow lb-next"
+        aria-label="Next image"
+        data-i18n-attr="aria-label:carouselNext"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="lb-close"
+        aria-label="Close"
+        data-i18n-attr="aria-label:carouselClose"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+      <div class="lb-dots" id="lb-dots" role="tablist" aria-label="Choose image"></div>
+    </div>
+
     <footer class="site-footer">
       <div class="container">
         <span data-i18n="footerTagline"></span>
@@ -190,6 +261,7 @@
           <a href="https://github.com/neratmatevz/BookmarkUp/discussions" data-i18n="footerDiscussions">Discussions</a>
           <a href="https://github.com/neratmatevz/BookmarkUp/releases" data-i18n="footerReleases">Releases</a>
           <a href="https://ko-fi.com/L4O426TJKI" data-i18n="footerSupport">Support</a>
+          <a href="privacy.html" data-i18n="footerPrivacy">Privacy</a>
           <a href="https://github.com/neratmatevz/BookmarkUp/blob/main/LICENSE" data-i18n="footerLicense">MIT License</a>
         </nav>
         <span>&copy; <span id="year">2026</span> BookmarkUp</span>

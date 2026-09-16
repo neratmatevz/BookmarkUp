@@ -100,5 +100,17 @@ export default {
   footerDiscussions: "Обсуждения",
   footerReleases: "Выпуски",
   footerSupport: "Поддержать (Ko-fi)",
+  footerPrivacy: "Конфиденциальность",
   footerLicense: "Лицензия MIT",
+
+  // Carousel
+  carouselPrev: "Предыдущее изображение",
+  carouselNext: "Следующее изображение",
+  carouselClose: "Закрыть",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "Из Chrome Web Store",
+  installStoreCta: "Установить в Chrome",
+  installDevTitle: "Из GitHub (режим разработчика)",
+  installDevIntro: "Предпочитаете установить вручную или хотите самую свежую сборку? Установите прямо с GitHub:",
 };

@@ -101,5 +101,17 @@ export default {
   footerDiscussions: "النقاشات",
   footerReleases: "الإصدارات",
   footerSupport: "ادعمنا (Ko-fi)",
+  footerPrivacy: "الخصوصية",
   footerLicense: "رخصة MIT",
+
+  // Carousel
+  carouselPrev: "الصورة السابقة",
+  carouselNext: "الصورة التالية",
+  carouselClose: "إغلاق",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "من متجر Chrome الإلكتروني",
+  installStoreCta: "إضافة إلى Chrome",
+  installDevTitle: "من GitHub (وضع المطور)",
+  installDevIntro: "تفضّل التثبيت يدويًا أو تريد أحدث إصدار؟ ثبّت مباشرةً من GitHub:",
 };

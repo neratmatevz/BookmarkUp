@@ -100,5 +100,17 @@ export default {
   footerDiscussions: "Rasprave",
   footerReleases: "Izdanja",
   footerSupport: "Podržite nas (Ko-fi)",
+  footerPrivacy: "Privatnost",
   footerLicense: "MIT licenca",
+
+  // Carousel
+  carouselPrev: "Prethodna slika",
+  carouselNext: "Sljedeća slika",
+  carouselClose: "Zatvori",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "Iz Chrome Web Storea",
+  installStoreCta: "Dodaj u Chrome",
+  installDevTitle: "S GitHuba (razvojni način)",
+  installDevIntro: "Radije instalirate ručno ili želite najnoviju verziju? Instalirajte direktno s GitHuba:",
 };

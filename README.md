@@ -30,6 +30,12 @@ BookmarkUp flips the default: **a plain left click opens the bookmark in a new t
 your current tab stays exactly as it was** - same page, same scroll position, even text
 you'd typed but not yet submitted. Nothing is lost.
 
+<div align="center">
+
+<img src="docs/assets/promo/01.%20Promo_Overview%20-%20BookmarkUp.webp" width="820" alt="BookmarkUp: open any bookmark in a new tab with one left click" />
+
+</div>
+
 ## What it does
 
 - **Left-click a bookmark → new tab.** Works with the bookmarks you already have, right
@@ -86,8 +92,17 @@ to return to your bookmarks). Inside you'll find:
 
 ## Install
 
-BookmarkUp is at **v1.4.0**. A public release on the **Chrome Web Store** is on the way - in
-the meantime you can install it straight from GitHub:
+BookmarkUp is at **v1.4.0** and works in Chrome, Brave, Edge, and other Chromium-based
+browsers (version 116 or newer).
+
+### From the Chrome Web Store (recommended)
+
+[**Add to Chrome**](https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID) - one click,
+and it stays up to date automatically.
+
+### From GitHub (developer mode)
+
+Prefer to install manually, or want the newest build?
 
 1. Download `BookmarkUp-<version>.zip` from the [**latest release**](https://github.com/neratmatevz/BookmarkUp/releases/latest) and unzip it.
 2. Open `chrome://extensions` (or `brave://extensions`) and turn on **Developer mode**
@@ -96,10 +111,8 @@ the meantime you can install it straight from GitHub:
    `manifest.json`).
 4. Pin BookmarkUp and start left-clicking your bookmarks.
 
-Works in Chrome, Brave, and other Chromium-based browsers (version 116 or newer).
-
 > Browsers show a "developer mode extensions" reminder on startup for anything installed
-> this way; it disappears once BookmarkUp is on the Chrome Web Store.
+> this way; it disappears once you install from the Chrome Web Store.
 
 ## Privacy
 
