@@ -108,6 +108,7 @@ ul.node-list ul.node-list {
 }
 
 .status {
+  display: block; /* <output> is inline by default; keep the old block layout */
   margin: 0;
   padding: 8px 12px;
   border-top: 1px solid var(--border);

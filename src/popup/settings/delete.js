@@ -49,7 +49,7 @@ async function onDeleteData() {
     // Restore original bookmark URLs and clear stored settings first — once the
     // extension is uninstalled below, this code can no longer run.
     const res = await chrome.runtime.sendMessage({ type: MSG.prepareUninstall });
-    if (!res || res.ok !== true) {
+    if (res?.ok !== true) {
       throw new Error(res?.error || "Could not restore bookmarks.");
     }
 

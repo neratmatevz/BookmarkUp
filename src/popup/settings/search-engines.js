@@ -66,7 +66,7 @@ function makeRow(engine) {
   name.textContent = engine.label;
   name.title = engine.label;
 
-  const toggle = document.createElement("label");
+  const toggle = document.createElement("span");
   toggle.className = "switch";
   const input = document.createElement("input");
   input.type = "checkbox";
