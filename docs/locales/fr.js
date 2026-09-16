@@ -107,4 +107,10 @@ export default {
   carouselPrev: "Image précédente",
   carouselNext: "Image suivante",
   carouselClose: "Fermer",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "Depuis le Chrome Web Store",
+  installStoreCta: "Ajouter à Chrome",
+  installDevTitle: "Depuis GitHub (mode développeur)",
+  installDevIntro: "Vous préférez installer manuellement ou avoir la toute dernière version ? Installez directement depuis GitHub :",
 };

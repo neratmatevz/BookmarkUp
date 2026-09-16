@@ -107,4 +107,10 @@ export default {
   carouselPrev: "上一张图片",
   carouselNext: "下一张图片",
   carouselClose: "关闭",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "从 Chrome 网上应用店",
+  installStoreCta: "添加到 Chrome",
+  installDevTitle: "从 GitHub（开发者模式）",
+  installDevIntro: "想手动安装，或想要最新版本？直接从 GitHub 安装：",
 };

@@ -107,4 +107,10 @@ export default {
   carouselPrev: "Претходна слика",
   carouselNext: "Следећа слика",
   carouselClose: "Затвори",
+
+  // Install (Web Store + developer mode)
+  installStoreTitle: "Из Chrome Web Store-а",
+  installStoreCta: "Додај у Chrome",
+  installDevTitle: "Са GitHub-а (развојни режим)",
+  installDevIntro: "Радије инсталирате ручно или желите најновију верзију? Инсталирајте директно са GitHub-а:",
 };
